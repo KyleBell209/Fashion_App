@@ -1,0 +1,114 @@
+{% extends 'store/main.html' %}
+
+{% block content %}
+  <div class="container">
+    <h1>Product Recommendation Survey</h1>
+    <form method="post" action="{% url 'survey' %}">
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="gender">Gender</label>
+        <select class="form-control" name="gender" id="gender">
+          <option value="">Select</option>
+          <option value="Men">Men</option>
+          <option value="Women">Women</option>
+          <option value="Boys">Boys</option>
+          <option value="Girls">Girls</option>
+          <option value="Unisex">Unisex</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="baseColour">Base Colour</label>
+        <input type="text" class="form-control" name="baseColour" id="baseColour" placeholder="Enter your preferred base colour">
+      </div>
+      <div class="form-group">
+        <label for="season">Season</label>
+        <select class="form-control" name="season" id="season">
+          <option value="">Select</option>
+          <option value="Spring">Spring</option>
+          <option value="Summer">Summer</option>
+          <option value="Fall">Fall</option>
+          <option value="Winter">Winter</option>
+        </select>
+        <div class="form-group">
+            <label for="masterCategory">Master Category</label>
+            <select class="form-control" name="masterCategory" id="masterCategory">
+              <option value="">Select</option>
+              <option value="Apparel">Apparel</option>
+              <option value="Accessories">Accessories</option>
+              <option value="Footwear">Footwear</option>
+              <option value="Personal Care">Personal Care</option>
+              <option value="Free Items">Free Items</option>
+              <option value="Sporting Goods">Sporting Goods</option>
+              <option value="Home">Home</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="subCategory">Sub Category</label>
+            <select class="form-control" name="subCategory" id="subCategory">
+              <option value="">Select</option>
+              <option value="Topwear">Topwear</option>
+              <option value="Bottomwear">Bottomwear</option>
+              <option value="Watches">Watches</option>
+              <option value="Socks">Socks</option>
+              <option value="Shoes">Shoes</option>
+              <option value="Belts">Belts</option>
+              <option value="Flip Flops">Flip Flops</option>
+              <option value="Bags">Bags</option>
+              <option value="Innerwear">Innerwear</option>
+              <option value="Sandal">Sandal</option>
+              <option value="Shoe Accessories">Shoe Accessories</option>
+              <option value="Fragrance">Fragrance</option>
+              <option value="Jewellery">Jewellery</option>
+              <option value="Lips">Lips</option>
+              <option value="Saree">Saree</option>
+              <option value="Eyewear">Eyewear</option>
+              <option value="Nails">Nails</option>
+              <option value="Scarves">Scarves</option>
+              <option value="Dress">Dress</option>
+              <option value="Loungewear and Nightwear">Loungewear and Nightwear</option>
+              <option value="Wallets">Wallets</option>
+              <option value="Apparel Set">Apparel Set</option>
+              <option value="Headwear">Headwear</option>
+              <option value="Mufflers">Mufflers</option>
+              <option value="Skin Care">Skin Care</option>
+              <option value="Makeup">Makeup</option>
+              <option value="Free Gifts">Free Gifts</option>
+              <option value="Ties">Ties</option>
+              <option value="Accessories">Accessories</option>
+              <option value="Skin">Skin</option>
+              <option value="Beauty Accessories">Beauty Accessories</option>
+              <option value="Water Bottle">Water Bottle</option>
+              <option value="Eyes">Eyes</option>
+              <option value="Bath and Body">Bath and Body</option>
+              <option value="Gloves">Gloves</option>
+              <option value="Sports Accessories">Sports Accessories</option>
+              <option value="Cufflinks">Cufflinks</option>
+              <option value="Sports Equipment">Sports Equipment</option>
+              <option value="Stoles">Stoles</option>
+              <option value="Hair">Hair</option>
+              <option value="Perfumes">Perfumes</option>
+              <option value="Home Furnishing">Home Furnishing</option>
+              <option value="Umbrellas">Umbrellas</option>
+              <option value="Wristbands">Wristbands</option>
+              <option value="Vouchers">Vouchers</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="usage">Usage</label>
+            <select class="form-control" name="usage" id="usage">
+              <option value="">Select</option>
+              <option value="Casual">Casual</option>
+              <option value="Ethnic">Ethnic</option>
+              <option value="Formal">Formal</option>
+              <option value="Sports">Sports</option>
+              <option value="Smart Casual">Smart Casual</option>
+              <option value="Travel">Travel</option>
+              <option value="Party">Party</option>
+              <option value="Home">Home</option>
+            </select>
+          </div>
+      </div>
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+  </div>
+{% endblock %}

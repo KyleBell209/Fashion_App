@@ -1,0 +1,45 @@
+from django.shortcuts import render, redirect
+from django.http import JsonResponse
+from .models import *
+from django.contrib.auth import authenticate, login, logout
+from .forms import *
+from django.contrib import messages
+
+def register(request):
+    if request.user.is_authenticated:
+        return redirect('store')
+    else:
+        form = CreateUserForm()
+        if request.method=='POST':
+            form = CreateUserForm(request.POST)
+            if form.is_valid():
+                user = form.save()
+                # Create a Customer instance for the new user
+                Customer.objects.create(user=user, name=user.username, email=user.email)
+                messages.success(request, 'Account was created for the user, ' + form.cleaned_data.get('username'))
+                return redirect('userlogin')
+    context = {'form': form}
+    return render(request, 'store/register.html', context=context)
+
+
+def userlogin(request):
+    if request.user.is_authenticated:
+        return redirect('store')
+    else:
+        if request.method == 'POST':
+            username = request.POST.get('username','')
+            password = request.POST.get('password','')
+
+            user = authenticate(request, username=username, password=password)
+            
+            if user is not None:
+                login(request, user)
+                return redirect('store')
+            else:
+                messages.info(request, 'Username or password is incorrect') 
+    context = {}
+    return render(request, 'store/login.html', context=context)
+
+def userlogout(request):
+    logout(request)
+    return redirect('userlogin')
