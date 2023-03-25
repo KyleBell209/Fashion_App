@@ -98,40 +98,38 @@ h1,h2,h3,h4,h5,h6{
 
 }
 
-.chg-quantity{
-	width: 12px;
+.bin-icon{
+	width: 30px;
 	cursor: pointer;
 	display: block;
 	margin-top: 5px;
 	transition:.1s;
 }
 
-.chg-quantity:hover{
-	opacity: .6;
+.bin-icon:hover{
+	opacity: .5;
 }
-
 
 .hidden{
 	display: none!important;
 }
 
 .gradient-custom-3 {
-	/* fallback for old browsers */
-	background: #84fab0;
+	background: gray;
 	
 	/* Chrome 10-25, Safari 5.1-6 */
-	background: -webkit-linear-gradient(to right, rgba(132, 250, 176, 0.5), rgba(143, 211, 244, 0.5));
+	background: -webkit-linear-gradient(to right, rgba(36, 36, 36, 0.5), rgba(143, 211, 244, 0.5));
 	
 	/* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-	background: linear-gradient(to right, rgba(132, 250, 176, 0.5), rgba(143, 211, 244, 0.5))
+	background: linear-gradient(to right, rgba(56, 56, 56, 0.5), rgba(143, 211, 244, 0.5))
 	}
 	.gradient-custom-4 {
 	/* fallback for old browsers */
-	background: #84fab0;
+	background: gray;
 	
 	/* Chrome 10-25, Safari 5.1-6 */
-	background: -webkit-linear-gradient(to right, rgba(132, 250, 176, 1), rgba(143, 211, 244, 1));
+	background: -webkit-linear-gradient(to right, rgb(51, 51, 51), rgb(54, 54, 54));
 	
 	/* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-	background: linear-gradient(to right, rgba(132, 250, 176, 1), rgba(143, 211, 244, 1))
+	background: linear-gradient(to right, rgb(255, 255, 255), rgb(61, 61, 61))
 	}

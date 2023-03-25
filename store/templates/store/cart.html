@@ -42,13 +42,9 @@
 				<div style="flex:2"><img class="row-image" src="{{ item.product.imageURL }}"></div>
 					<div style="flex:2"><p>{{item.product.productDisplayName}}</p></div>
 					
-					<div style="flex:1">
-						<p class="quantity">{{item.quantity}}</p>
-						<div class="quantity">
-							<img data-product="{{item.product.id}}" data-action="add" class="chg-quantity update-cart" src="{% static  'icons/arrow-up.png' %}">
+					<div style="flex:1">			
+							<img data-product="{{item.product.id}}" data-action="remove" class="bin-icon update-cart" src="{% static  'icons/bin.png' %}">
 					
-							<img data-product="{{item.product.id}}" data-action="remove" class="chg-quantity update-cart" src="{% static  'icons/arrow-down.png' %}">
-						</div>
 					</div>
 				</div>
 				{% if item_id in recommended_images %}
@@ -62,7 +58,7 @@
 					<div style="flex:1">
 						<img class="row-image" src="{{ rec_image.image_url }}" alt="">
 						<p><strong>{{ rec_image.product.productDisplayName }}</strong></p>
-						<button data-product="{{ rec_image.image_url }}" data-action="add" class="btn btn-outline-secondary add-btn update-cart">Add to Cart</button>
+						<button data-product="{{ rec_image.image_url }}" data-action="add" data-source="cart" class="btn btn-outline-secondary add-btn update-cart">Add to Cart</button>
 					</div>
 				{% endfor %}	
 				</div>

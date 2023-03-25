@@ -79,10 +79,18 @@ def updateItem(request):
     data = json.loads(request.body)
     product_info = data['productId']
     action = data['action']
+    source = data.get('source', '')
 
     customer = request.user.customer
 
-    product_id = int(re.search(r'(?<=\/images\\).+?(?=.jpg)', product_info).group() or product_info)
+    if source == 'cart':
+        match = re.search(r'(?<=\/images\\).+?(?=.jpg)', product_info)
+        if match:
+            product_id = int(match.group())
+        else:
+            product_id = int(product_info)
+    else:
+        product_id = int(product_info)
 
     product = ProductTest.objects.get(id=product_id)
 
@@ -91,10 +99,8 @@ def updateItem(request):
 
     if action == 'add':
         orderItem.quantity += 1
+        orderItem.save()
     elif action == 'remove':
-        orderItem.quantity -= 1
-    
-    if orderItem.quantity <= 0:
         orderItem.delete()
 
     return JsonResponse('Item was added', safe=False)
