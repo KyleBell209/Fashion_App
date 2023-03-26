@@ -108,6 +108,7 @@ def get_filtered_products(request):
         filtered_products = filter_products_by_preferences(product_list, preferences)
         
         data = [{
+            'id': product.id,
             'name': product.productDisplayName,
             'image_url': product.imageURL,
         } for product in filtered_products]

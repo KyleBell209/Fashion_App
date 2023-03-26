@@ -68,13 +68,17 @@
 	<div style="flex:2"></div>
         <div style="flex:2"><strong>Mean {{ master_category }} Recommendations</strong></div>
         <div style="flex:1"></div>
-        {% if master_category in master_category_mean_recommendations %}
-        <div class="cart-row">
-            {% for image_path in master_category_mean_recommendations|get_item:master_category %}
-            <div style="flex:2"><img class="row-image" src="{{ image_path }}"></div>
-            {% endfor %}
-        </div>
-        {% endif %}
+		{% if master_category in master_category_mean_recommendations %}
+		<div class="cart-row">
+			{% for rec_image in master_category_mean_recommendations|get_item:master_category %}
+			<div style="flex:2">
+				<img class="row-image" src="{{ rec_image.image_url }}" alt="">
+				<p><strong>{{ rec_image.product.productDisplayName }}</strong></p>
+				<button data-product="{{ rec_image.image_url }}" data-action="add" data-source="cart" class="btn btn-outline-secondary add-btn update-cart">Add to Cart</button>
+			</div>
+			{% endfor %}
+		</div>
+		{% endif %}
     {% endfor %}
         </div>
     </div>

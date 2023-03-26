@@ -82,7 +82,6 @@ def get_mean_cart_recommendations(product_image_urls):
     if len(product_image_urls) == 0:
         return []
 
-    # Parallelize feature extraction
     with ThreadPoolExecutor() as executor:
         feature_vectors = list(executor.map(process_image_and_extract_features, product_image_urls))
 
@@ -92,8 +91,8 @@ def get_mean_cart_recommendations(product_image_urls):
 
     distances, indices = neighbors.kneighbors(mean_feature_vector)
 
-    recommended_image_paths = [f'https://storage.googleapis.com/django-bucket-kb/{filenames[file]}' for file in indices[0][1:]]
-    return recommended_image_paths
+    recommended_images = [RecommendedImage(image_url=f'https://storage.googleapis.com/django-bucket-kb/{filenames[file]}') for file in indices[0][1:]]
+    return recommended_images
 
 
 def get_recommended_products(product_list, user_preferences):

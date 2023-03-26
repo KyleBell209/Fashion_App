@@ -1,6 +1,8 @@
 document.addEventListener('DOMContentLoaded', function () {
   const masterCategory = document.getElementById('masterCategory');
   const subCategory = document.getElementById('subCategory');
+  const articleType = document.getElementById('articleType');
+
 
   const apparelOptions = [
     'Topwear',
@@ -29,6 +31,20 @@ document.addEventListener('DOMContentLoaded', function () {
   ];
 
   const footwearOptions = ['Shoes', 'Flip Flops', 'Sandal'];
+  const articleTypeOptions = {
+    'Accessories': ['Accessory Gift Set', 'Key Chain'],
+    'Apparel Set': ['Kurta Sets', 'Swimwear'],
+    'Bags': ['Backpacks', 'Clutches', 'Duffel Bag', 'Handbags', 'Laptop Bag', 'Mobile Pouch', 'Messenger Bag', 'Rucksacks', 'Tablet Sleeve', 'Trolley Bag', 'Waist Pouch'],
+    'Bottomwear': ['Capris', 'Jeans', 'Leggings', 'Patiala', 'Rain Trousers', 'Salwar', 'Salwar and Dupatta', 'Shorts', 'Skirts', 'Stockings', 'Swimwear', 'Track Pants', 'Trousers'],
+    'Cufflinks': ['Cufflinks', 'Cufflinks and Ties'],
+    'Dresses': ['Dresses', 'Jumpsuit'],
+    'Headwear': ['Cap', 'Hat', 'Headband'],
+    'Jewellery': ['Bangle', 'Bracelet', 'Earrings', 'Jewellery Set', 'Necklace and Chains', 'Pendant', 'Ring'],
+    'Loungewear and Nightwear': ['Lounge Pants', 'Lounge Shorts', 'Lounge Tshirts', 'Night suits', 'Nightdress', 'Robe', 'Shorts'],
+    'Sandals': ['Sandals', 'Sports Sandals'],
+    'Shoes': ['Casual Shoes', 'Flats', 'Formal Shoes', 'Heels', 'Sports Shoes'],
+    'Topwear': ['Tops', 'Tshirts', 'Blazers', 'Dupatta', 'Jackets', 'Kurtas', 'Shirts', 'Shrug', 'Suits', 'Suspenders', 'Sweaters', 'Sweatshirts', 'Tunics', 'Waistcoat'],
+  };
 
   function updateSubCategoryOptions(options) {
     subCategory.innerHTML = '<option value="">Select</option>';
@@ -46,6 +62,18 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
+  function updateArticleTypeOptions(options) {
+    articleType.innerHTML = '<option value="">Select</option>';
+
+    options.forEach(option => {
+      const optionElement = document.createElement('option');
+      optionElement.value = option;
+      optionElement.textContent = option;
+
+      articleType.appendChild(optionElement);
+    });
+  }
+
   function onMasterCategoryChange() {
     if (masterCategory.value === 'Apparel') {
       updateSubCategoryOptions(apparelOptions);
@@ -56,14 +84,31 @@ document.addEventListener('DOMContentLoaded', function () {
     } else {
       subCategory.innerHTML = '<option value="">Select</option>';
     }
+    articleType.innerHTML = '<option value="">Select</option>';
+  }
+
+  function onSubCategoryChange() {
+    const selectedSubCategory = subCategory.value;
+    if (articleTypeOptions[selectedSubCategory]) {
+      updateArticleTypeOptions(articleTypeOptions[selectedSubCategory]);
+    } else {
+      articleType.innerHTML = '<option value="">Select</option>';
+    }
   }
 
   masterCategory.addEventListener('change', onMasterCategoryChange);
+  subCategory.addEventListener('change', onSubCategoryChange);
 
-  if (masterCategory.value !== '') {
-    onMasterCategoryChange();
+  if (user_preferences.masterCategory) {
+  masterCategory.value = user_preferences.masterCategory;
+  onMasterCategoryChange();
   }
-});
+    
+  if (user_preferences.subCategory) {
+  subCategory.value = user_preferences.subCategory;
+  onSubCategoryChange();
+  }
+  });
     
     // Get the form and form fields
     const form = document.getElementById('preferences-form');
@@ -83,21 +128,22 @@ document.addEventListener('DOMContentLoaded', function () {
           const filteredProducts = document.getElementById('filtered-products');
           if (data.length) {
             filteredProducts.innerHTML = data.map(product => `
-                <div class="col-6 col-md-4 col-lg-3">
-                    <div class="card mb-4">
-                        <img src="${product.image_url}" class="card-img-top">
-                        <div class="card-body">
-                            <h5 class="card-title">${product.name}</h5>
-                            <button data-product="${product.id}" data-action="add" class="btn btn-primary update-cart">Add to Cart</button>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
+                  <div class="col-6 col-md-4 col-lg-3">
+                      <div class="card mb-4">
+                          <img src="${product.image_url}" class="card-img-top">
+                          <div class="card-body">
+                              <h5 class="card-title">${product.name}</h5>
+                              <button data-product="${product.id}" data-action="add" class="btn btn-primary update-cart">Add to Cart</button>
+                          </div>
+                      </div>
+                  </div>
+              `).join('');
           } else {
             filteredProducts.innerHTML = '<p>No Clothing Found</p>';
           }
+          attachAddToCartEventListeners();
         });
-    }
+      }
   
     // Add an event listener to the form fields to listen for changes
     formFields.forEach(field => {
@@ -110,4 +156,21 @@ document.addEventListener('DOMContentLoaded', function () {
     // Call the refreshFilteredProducts function initially to load the products
     refreshFilteredProducts();
 
+    function attachAddToCartEventListeners() {
+      document.querySelectorAll('.update-cart').forEach(button => {
+        button.addEventListener('click', function (event) {
+          const productId = event.target.getAttribute('data-product');
+          const action = event.target.getAttribute('data-action');
+          const source = event.target.getAttribute('data-source') || '';
+          console.log(`Product ID: ${productId}, Action: ${action}, Source: ${source}`);
+    
+          if (user == 'AnonymousUser'){
+            console.log('User is not authenticated');
+          } else {
+            updateUserOrder(productId, action, source);
+          }
+        });
+      });
+    }
 
+attachAddToCartEventListeners();
