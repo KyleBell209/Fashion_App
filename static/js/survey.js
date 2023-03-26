@@ -1,3 +1,70 @@
+document.addEventListener('DOMContentLoaded', function () {
+  const masterCategory = document.getElementById('masterCategory');
+  const subCategory = document.getElementById('subCategory');
+
+  const apparelOptions = [
+    'Topwear',
+    'Bottomwear',
+    'Saree',
+    'Dress',
+    'Loungewear and Nightwear',
+    'Apparel Set',
+  ];
+
+  const accessoriesOptions = [
+    'Watches',
+    'Belts',
+    'Bags',
+    'Shoe Accessories',
+    'Jewellery',
+    'Eyewear',
+    'Headwear',
+    'Mufflers',
+    'Ties',
+    'Gloves',
+    'Sports Accessories',
+    'Cufflinks',
+    'Stoles',
+    'Scarves',
+  ];
+
+  const footwearOptions = ['Shoes', 'Flip Flops', 'Sandal'];
+
+  function updateSubCategoryOptions(options) {
+    subCategory.innerHTML = '<option value="">Select</option>';
+
+    options.forEach(option => {
+      const optionElement = document.createElement('option');
+      optionElement.value = option;
+      optionElement.textContent = option;
+
+      if (user_preferences.subCategory === option) {
+        optionElement.selected = true;
+      }
+
+      subCategory.appendChild(optionElement);
+    });
+  }
+
+  function onMasterCategoryChange() {
+    if (masterCategory.value === 'Apparel') {
+      updateSubCategoryOptions(apparelOptions);
+    } else if (masterCategory.value === 'Accessories') {
+      updateSubCategoryOptions(accessoriesOptions);
+    } else if (masterCategory.value === 'Footwear') {
+      updateSubCategoryOptions(footwearOptions);
+    } else {
+      subCategory.innerHTML = '<option value="">Select</option>';
+    }
+  }
+
+  masterCategory.addEventListener('change', onMasterCategoryChange);
+
+  if (masterCategory.value !== '') {
+    onMasterCategoryChange();
+  }
+});
+    
     // Get the form and form fields
     const form = document.getElementById('preferences-form');
     const formFields = Array.from(form.elements).filter(el => el.tagName === 'SELECT');
@@ -42,3 +109,5 @@
   
     // Call the refreshFilteredProducts function initially to load the products
     refreshFilteredProducts();
+
+

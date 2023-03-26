@@ -41,45 +41,19 @@
         <label for="subCategory">Sub Category</label>
         <select class="form-control" name="subCategory" id="subCategory">
           <option value="">Select</option>
-          <option  value="Topwear" {% if user_preferences.subCategory == "Topwear" %}selected{% endif %}>Topwear</option>
-          <option value="Bottomwear" {% if user_preferences.subCategory == "Bottomwear" %}selected{% endif %}>Bottomwear</option>
-          <option value="Watches" {% if user_preferences.subCategory == "Watches" %}selected{% endif %}>Watches</option>
-          <option value="Socks" {% if user_preferences.subCategory == "Socks" %}selected{% endif %}>Socks</option>
-          <option value="Shoes" {% if user_preferences.subCategory == "Shoes" %}selected{% endif %}>Shoes</option>
-          <option value="Belts" {% if user_preferences.subCategory == "Belts" %}selected{% endif %}>Belts</option>
-          <option value="Flip Flops" {% if user_preferences.subCategory == "Flip Flops" %}selected{% endif %}>Flip Flops</option>
-          <option value="Bags" {% if user_preferences.subCategory == "Bags" %}selected{% endif %}>Bags</option>
-          <option value="Sandal" {% if user_preferences.subCategory == "Sandal" %}selected{% endif %}>Sandal</option>
-          <option value="Shoe Accessories" {% if user_preferences.subCategory == "Shoe Accessories" %}selected{% endif %}>Shoe Accessories</option>
-          <option value="Jewellery" {% if user_preferences.subCategory == "Jewellery" %}selected{% endif %}>Jewellery</option>
-          <option value="Saree" {% if user_preferences.subCategory == "Saree" %}selected{% endif %}>Saree</option>
-          <option value="Eyewear" {% if user_preferences.subCategory == "Eyewear" %}selected{% endif %}>Eyewear</option>
-          <option value="Scarves" {% if user_preferences.subCategory == "Scarves" %}selected{% endif %}>Scarves</option>
-          <option value="Dress" {% if user_preferences.subCategory == "Dress" %}selected{% endif %}>Dress</option>
-          <option value="Loungewear and Nightwear" {% if user_preferences.subCategory == "Loungewear and Nightwear" %}selected{% endif %}>Loungewear and Nightwear</option>
-          <option value="Apparel Set" {% if user_preferences.subCategory == "Apparel Set" %}selected{% endif %}>Apparel Set</option>
-          <option value="Headwear" {% if user_preferences.subCategory == "Headwear" %}selected{% endif %}>Headwear</option>
-          <option value="Mufflers" {% if user_preferences.subCategory == "Mufflers" %}selected{% endif %}>Mufflers</option>
-          <option value="Ties" {% if user_preferences.subCategory == "Ties" %}selected{% endif %}>Ties</option>
-          <option value="Accessories" {% if user_preferences.subCategory == "Accessories" %}selected{% endif %}>Accessories</option>
-          <option value="Gloves" {% if user_preferences.subCategory == "Gloves" %}selected{% endif %}>Gloves</option>
-          <option value="Sports Accessories" {% if user_preferences.subCategory == "Sports Accessories" %}selected{% endif %}>Sports Accessories</option>
-          <option value="Cufflinks" {% if user_preferences.subCategory == "Cufflinks" %}selected{% endif %}>Cufflinks</option>
-          <option value="Stoles" {% if user_preferences.subCategory == "Stoles" %}selected{% endif %}>Stoles</option>
-          </select>
+        </select>
           </div>
             <div class="form-group">
               <label for="usage">Usage</label>
               <select class="form-control" name="usage" id="usage">
               <option value="">Select</option>
               <option value="Casual" {% if user_preferences.usage == "Casual" %}selected{% endif %}>Casual</option>
-              <option value="Ethnic" {% if user_preferences.usage == "Ethnic" %}selected{% endif %}>Ethnic</option>
               <option value="Formal" {% if user_preferences.usage == "Formal" %}selected{% endif %}>Formal</option>
               <option value="Sports" {% if user_preferences.usage == "Sports" %}selected{% endif %}>Sports</option>
               <option value="Smart Casual" {% if user_preferences.usage == "Smart Casual" %}selected{% endif %}>Smart Casual</option>
               <option value="Travel" {% if user_preferences.usage == "Travel" %}selected{% endif %}>Travel</option>
               <option value="Party" {% if user_preferences.usage == "Party" %}selected{% endif %}>Party</option>
-              <option value="Home" {% if user_preferences.usage == "Home" %}selected{% endif %}>Home</option>
+
               </select>
           </div>
       </div>
@@ -109,6 +83,10 @@
     
   </div>
   
-  
+  <script>
+    const user_preferences = {
+      subCategory: "{{ user_preferences.subCategory }}",
+    };
+  </script>
   <script type="text/javascript" src="{% static 'js/survey.js' %}"></script>
 {% endblock %}
