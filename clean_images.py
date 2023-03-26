@@ -2,6 +2,7 @@ import os
 import sys
 import django
 from pathlib import Path
+from django.db.models import Q
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ecommerce.settings')
 django.setup()
@@ -89,6 +90,12 @@ target_masterCategories = ProductTest.objects.filter(masterCategory__in=target_c
 target_subCategories = ProductTest.objects.filter(subCategory__in=target_categories)
 target_articleType = ProductTest.objects.filter(articleType__in=target_categories)
 target_gender = ProductTest.objects.filter(gender__in=target_categories)
+target_productDisplayName = ProductTest.objects.filter(
+    Q(productDisplayName__icontains="kid") | 
+    Q(productDisplayName__icontains="kids") |
+    Q(productDisplayName__icontains="child") |
+    Q(productDisplayName__icontains="children")
+)
 
 # Set file permissions for the static\images\ folder
 folder_path = os.path.join(os.path.abspath(os.path.join(os.path.dirname(__file__))), "static/images")
@@ -127,6 +134,14 @@ for product in target_gender:
     else:
         print(f"Image not found: {image_path}")
 
+for product in target_productDisplayName:
+    image_path = os.path.join(folder_path, product.imagePath)
+    if os.path.exists(image_path):
+        os.remove(image_path)
+        print(f"Deleted image: {image_path}")
+    else:
+        print(f"Image not found: {image_path}")
+
 # Loop through the products and delete the associated database entries
 for product in target_masterCategories:
     product.delete()
@@ -143,6 +158,10 @@ for product in target_articleType:
 for product in target_gender:
     product.delete()
     print(f"Deleted product with articleType: {product.gender}")
+
+for product in target_productDisplayName:
+    product.delete()
+    print(f"Deleted product with articleType: {product.productDisplayName}")
 
 # Reset file permissions for the static\images\ folder
 os.chmod(folder_path, 0o755) # Sets read and execute permissions for all users

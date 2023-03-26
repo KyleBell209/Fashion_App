@@ -5,6 +5,7 @@ from .accounts import *
 from .models import * 
 import os
 import re
+import random
 from numpy.linalg import norm
 from .recommendations import get_image_recommendations, get_recommended_products, get_mean_cart_recommendations
 from django.core.paginator import Paginator
@@ -28,6 +29,20 @@ def store(request):
     context = {'page_obj': page_obj, 'cartItems': cartItems}
     return render(request, 'store/store.html', context)
 
+def filter_products_by_preferences(product_list, preferences):
+    filtered_products = product_list
+
+    for field in ['gender', 'masterCategory', 'subCategory', 'articleType', 'baseColour', 'season', 'year', 'usage']:
+        value = getattr(preferences, field, None)
+        if value:
+            filtered_products = filtered_products.filter(**{field: value})
+    
+    num_products = 6
+    if len(filtered_products) > num_products:
+        return random.sample(list(filtered_products), num_products)
+    else:
+        return filtered_products
+
 @login_required(login_url='userlogin')
 def survey(request):
     if request.method == 'POST':
@@ -40,7 +55,12 @@ def survey(request):
         customer.save()
         return redirect('store')
 
-    return render(request, 'store/survey.html')
+    product_list = ProductTest.objects.all()
+    user_preferences = request.user.customer.preferences
+    filtered_products = filter_products_by_preferences(product_list, user_preferences)
+
+    context = {'filtered_products': filtered_products, 'user_preferences': user_preferences}
+    return render(request, 'store/survey.html', context)
 
 @login_required(login_url='userlogin')
 def cart(request):
@@ -73,6 +93,26 @@ def cart(request):
         'master_category_mean_recommendations': master_category_mean_recommendations,
     }
     return render(request, 'store/cart.html', context)
+
+def get_filtered_products(request):
+    if request.method == 'POST':
+        customer = request.user.customer
+        preferences, created = UserPreference.objects.get_or_create(customer=customer)
+        for field in ['gender', 'masterCategory', 'subCategory', 'articleType', 'baseColour', 'season', 'year', 'usage']:
+            setattr(preferences, field, request.POST.get(field))
+        preferences.save()
+        customer.preferences = preferences
+        customer.save()
+        
+        product_list = ProductTest.objects.all()
+        filtered_products = filter_products_by_preferences(product_list, preferences)
+        
+        data = [{
+            'name': product.productDisplayName,
+            'image_url': product.imageURL,
+        } for product in filtered_products]
+
+        return JsonResponse(data, safe=False)
 
 @login_required(login_url='userlogin')
 def updateItem(request):

@@ -1,114 +1,114 @@
 {% extends 'store/main.html' %}
-
+{% load static %}
 {% block content %}
   <div class="container">
     <h1>Product Recommendation Survey</h1>
-    <form method="post" action="{% url 'survey' %}">
+    <form id="preferences-form" method="POST">
       {% csrf_token %}
       <div class="form-group">
         <label for="gender">Gender</label>
         <select class="form-control" name="gender" id="gender">
           <option value="">Select</option>
-          <option value="Men">Men</option>
-          <option value="Women">Women</option>
-          <option value="Boys">Boys</option>
-          <option value="Girls">Girls</option>
-          <option value="Unisex">Unisex</option>
+          <option value="Men" {% if user_preferences.gender == "Men" %}selected{% endif %}>Men</option>
+          <option value="Women" {% if user_preferences.gender == "Women" %}selected{% endif %}>Women</option>
+          <option value="Unisex" {% if user_preferences.gender == "Unisex" %}selected{% endif %}>Unisex</option>
         </select>
       </div>
       <div class="form-group">
         <label for="baseColour">Base Colour</label>
-        <input type="text" class="form-control" name="baseColour" id="baseColour" placeholder="Enter your preferred base colour">
+        <input type="text" class="form-control" name="baseColour" id="baseColour" placeholder="Enter your preferred base colour" value="{{ user_preferences.baseColour }}">
       </div>
       <div class="form-group">
         <label for="season">Season</label>
         <select class="form-control" name="season" id="season">
           <option value="">Select</option>
-          <option value="Spring">Spring</option>
-          <option value="Summer">Summer</option>
-          <option value="Fall">Fall</option>
-          <option value="Winter">Winter</option>
+          <option value="Spring" {% if user_preferences.season == "Spring" %}selected{% endif %}>Spring</option>
+          <option value="Summer" {% if user_preferences.season == "Summer" %}selected{% endif %}>Summer</option>
+          <option value="Fall" {% if user_preferences.season == "Fall" %}selected{% endif %}>Fall</option>
+          <option value="Winter" {% if user_preferences.season == "Winter" %}selected{% endif %}>Winter</option>
         </select>
-        <div class="form-group">
-            <label for="masterCategory">Master Category</label>
-            <select class="form-control" name="masterCategory" id="masterCategory">
-              <option value="">Select</option>
-              <option value="Apparel">Apparel</option>
-              <option value="Accessories">Accessories</option>
-              <option value="Footwear">Footwear</option>
-              <option value="Personal Care">Personal Care</option>
-              <option value="Free Items">Free Items</option>
-              <option value="Sporting Goods">Sporting Goods</option>
-              <option value="Home">Home</option>
-            </select>
+      </div>
+      <div class="form-group">
+        <label for="masterCategory">Master Category</label>
+        <select class="form-control" name="masterCategory" id="masterCategory">
+          <option value="">Select</option>
+          <option value="Apparel" {% if user_preferences.masterCategory == "Apparel" %}selected{% endif %}>Apparel</option>
+          <option value="Accessories" {% if user_preferences.masterCategory == "Accessories" %}selected{% endif %}>Accessories</option>
+          <option value="Footwear" {% if user_preferences.masterCategory == "Footwear" %}selected{% endif %}>Footwear</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="subCategory">Sub Category</label>
+        <select class="form-control" name="subCategory" id="subCategory">
+          <option value="">Select</option>
+          <option  value="Topwear" {% if user_preferences.subCategory == "Topwear" %}selected{% endif %}>Topwear</option>
+          <option value="Bottomwear" {% if user_preferences.subCategory == "Bottomwear" %}selected{% endif %}>Bottomwear</option>
+          <option value="Watches" {% if user_preferences.subCategory == "Watches" %}selected{% endif %}>Watches</option>
+          <option value="Socks" {% if user_preferences.subCategory == "Socks" %}selected{% endif %}>Socks</option>
+          <option value="Shoes" {% if user_preferences.subCategory == "Shoes" %}selected{% endif %}>Shoes</option>
+          <option value="Belts" {% if user_preferences.subCategory == "Belts" %}selected{% endif %}>Belts</option>
+          <option value="Flip Flops" {% if user_preferences.subCategory == "Flip Flops" %}selected{% endif %}>Flip Flops</option>
+          <option value="Bags" {% if user_preferences.subCategory == "Bags" %}selected{% endif %}>Bags</option>
+          <option value="Sandal" {% if user_preferences.subCategory == "Sandal" %}selected{% endif %}>Sandal</option>
+          <option value="Shoe Accessories" {% if user_preferences.subCategory == "Shoe Accessories" %}selected{% endif %}>Shoe Accessories</option>
+          <option value="Jewellery" {% if user_preferences.subCategory == "Jewellery" %}selected{% endif %}>Jewellery</option>
+          <option value="Saree" {% if user_preferences.subCategory == "Saree" %}selected{% endif %}>Saree</option>
+          <option value="Eyewear" {% if user_preferences.subCategory == "Eyewear" %}selected{% endif %}>Eyewear</option>
+          <option value="Scarves" {% if user_preferences.subCategory == "Scarves" %}selected{% endif %}>Scarves</option>
+          <option value="Dress" {% if user_preferences.subCategory == "Dress" %}selected{% endif %}>Dress</option>
+          <option value="Loungewear and Nightwear" {% if user_preferences.subCategory == "Loungewear and Nightwear" %}selected{% endif %}>Loungewear and Nightwear</option>
+          <option value="Apparel Set" {% if user_preferences.subCategory == "Apparel Set" %}selected{% endif %}>Apparel Set</option>
+          <option value="Headwear" {% if user_preferences.subCategory == "Headwear" %}selected{% endif %}>Headwear</option>
+          <option value="Mufflers" {% if user_preferences.subCategory == "Mufflers" %}selected{% endif %}>Mufflers</option>
+          <option value="Ties" {% if user_preferences.subCategory == "Ties" %}selected{% endif %}>Ties</option>
+          <option value="Accessories" {% if user_preferences.subCategory == "Accessories" %}selected{% endif %}>Accessories</option>
+          <option value="Gloves" {% if user_preferences.subCategory == "Gloves" %}selected{% endif %}>Gloves</option>
+          <option value="Sports Accessories" {% if user_preferences.subCategory == "Sports Accessories" %}selected{% endif %}>Sports Accessories</option>
+          <option value="Cufflinks" {% if user_preferences.subCategory == "Cufflinks" %}selected{% endif %}>Cufflinks</option>
+          <option value="Stoles" {% if user_preferences.subCategory == "Stoles" %}selected{% endif %}>Stoles</option>
+          </select>
           </div>
-          <div class="form-group">
-            <label for="subCategory">Sub Category</label>
-            <select class="form-control" name="subCategory" id="subCategory">
+            <div class="form-group">
+              <label for="usage">Usage</label>
+              <select class="form-control" name="usage" id="usage">
               <option value="">Select</option>
-              <option value="Topwear">Topwear</option>
-              <option value="Bottomwear">Bottomwear</option>
-              <option value="Watches">Watches</option>
-              <option value="Socks">Socks</option>
-              <option value="Shoes">Shoes</option>
-              <option value="Belts">Belts</option>
-              <option value="Flip Flops">Flip Flops</option>
-              <option value="Bags">Bags</option>
-              <option value="Innerwear">Innerwear</option>
-              <option value="Sandal">Sandal</option>
-              <option value="Shoe Accessories">Shoe Accessories</option>
-              <option value="Fragrance">Fragrance</option>
-              <option value="Jewellery">Jewellery</option>
-              <option value="Lips">Lips</option>
-              <option value="Saree">Saree</option>
-              <option value="Eyewear">Eyewear</option>
-              <option value="Nails">Nails</option>
-              <option value="Scarves">Scarves</option>
-              <option value="Dress">Dress</option>
-              <option value="Loungewear and Nightwear">Loungewear and Nightwear</option>
-              <option value="Wallets">Wallets</option>
-              <option value="Apparel Set">Apparel Set</option>
-              <option value="Headwear">Headwear</option>
-              <option value="Mufflers">Mufflers</option>
-              <option value="Skin Care">Skin Care</option>
-              <option value="Makeup">Makeup</option>
-              <option value="Free Gifts">Free Gifts</option>
-              <option value="Ties">Ties</option>
-              <option value="Accessories">Accessories</option>
-              <option value="Skin">Skin</option>
-              <option value="Beauty Accessories">Beauty Accessories</option>
-              <option value="Water Bottle">Water Bottle</option>
-              <option value="Eyes">Eyes</option>
-              <option value="Bath and Body">Bath and Body</option>
-              <option value="Gloves">Gloves</option>
-              <option value="Sports Accessories">Sports Accessories</option>
-              <option value="Cufflinks">Cufflinks</option>
-              <option value="Sports Equipment">Sports Equipment</option>
-              <option value="Stoles">Stoles</option>
-              <option value="Hair">Hair</option>
-              <option value="Perfumes">Perfumes</option>
-              <option value="Home Furnishing">Home Furnishing</option>
-              <option value="Umbrellas">Umbrellas</option>
-              <option value="Wristbands">Wristbands</option>
-              <option value="Vouchers">Vouchers</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="usage">Usage</label>
-            <select class="form-control" name="usage" id="usage">
-              <option value="">Select</option>
-              <option value="Casual">Casual</option>
-              <option value="Ethnic">Ethnic</option>
-              <option value="Formal">Formal</option>
-              <option value="Sports">Sports</option>
-              <option value="Smart Casual">Smart Casual</option>
-              <option value="Travel">Travel</option>
-              <option value="Party">Party</option>
-              <option value="Home">Home</option>
-            </select>
+              <option value="Casual" {% if user_preferences.usage == "Casual" %}selected{% endif %}>Casual</option>
+              <option value="Ethnic" {% if user_preferences.usage == "Ethnic" %}selected{% endif %}>Ethnic</option>
+              <option value="Formal" {% if user_preferences.usage == "Formal" %}selected{% endif %}>Formal</option>
+              <option value="Sports" {% if user_preferences.usage == "Sports" %}selected{% endif %}>Sports</option>
+              <option value="Smart Casual" {% if user_preferences.usage == "Smart Casual" %}selected{% endif %}>Smart Casual</option>
+              <option value="Travel" {% if user_preferences.usage == "Travel" %}selected{% endif %}>Travel</option>
+              <option value="Party" {% if user_preferences.usage == "Party" %}selected{% endif %}>Party</option>
+              <option value="Home" {% if user_preferences.usage == "Home" %}selected{% endif %}>Home</option>
+              </select>
           </div>
       </div>
       <button type="submit" class="btn btn-primary">Submit</button>
     </form>
+    
+    <div id="filtered-products" class="row">
+      {% if filtered_products %}
+        {% for product in filtered_products %}
+          <div class="col-6 col-md-4 col-lg-3">
+            <div class="card mb-4">
+              <img src="{{ product.imageURL }}" class="card-img-top">
+              <div class="card-body">
+                <h5 class="card-title">{{ product.name }}</h5>
+                <button data-product="{{ product.id }}" data-action="add" class="btn btn-primary update-cart">Add to Cart</button>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <p>No Clothing Found</p>
+      {% endif %}
+    </div>
+    <button id="more-products" class="btn btn-secondary mt-3">More products?</button>
   </div>
+
+    
+  </div>
+  
+  
+  <script type="text/javascript" src="{% static 'js/survey.js' %}"></script>
 {% endblock %}
