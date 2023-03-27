@@ -37,5 +37,3 @@ function updateUserOrder(productId, action, source){
     });
 }
 
-
-

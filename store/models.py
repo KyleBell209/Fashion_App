@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import gettext as _
 from django.conf import settings
+import re
 # Create your models here.
 
 class Customer(models.Model):
@@ -80,9 +81,20 @@ class OrderItem(models.Model):
         super(OrderItem, self).save(*args, **kwargs)
 
 class RecommendedImage(models.Model):
+    product_test = models.ForeignKey(ProductTest, on_delete=models.CASCADE, null=True, related_name='recommended_images')
     product = models.ForeignKey(ProductTest, on_delete=models.CASCADE, null=True)
     image_url = models.CharField(max_length=500, null=True)
 
     def __str__(self):
         return f'RecommendedImage for {self.product}'
+    
+    def get_related_product_name(self):
+        match = re.search(r'(?<=/images\\).+?(?=.jpg)', self.image_url)
+        if match:
+            product_id = int(match.group())
+            related_product = ProductTest.objects.get(id=product_id)
+            return related_product.productDisplayName
+        else:
+            return "Product not found"
+
 

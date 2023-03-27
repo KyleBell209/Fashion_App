@@ -68,31 +68,35 @@ def cart(request):
     order, created = Order.objects.get_or_create(customer=customer, complete=False)
     items = order.orderitem_set.all()
     cartItems = order.get_cart_items
+    
+    filter_type = request.GET.get('filter', 'masterCategory')
 
-    items_by_master_category = {}
+    items_by_filter = {}
     recommended_images = {}
     product_image_urls = []
 
-    for item in sorted(items, key=lambda item: item.product.masterCategory):
-        items_by_master_category.setdefault(item.product.masterCategory, []).append(item)
+    for item in items:
+        items_by_filter.setdefault(getattr(item.product, filter_type), []).append(item)
         recommended_images[str(item.id)] = get_image_recommendations(item.product.id)
         product_image_urls.append(item.product.imageURL)
 
     mean_cart_recommendations = get_mean_cart_recommendations(product_image_urls)
 
-    master_category_mean_recommendations = {
-        master_category: get_mean_cart_recommendations([item.product.imageURL for item in master_category_items])
-        for master_category, master_category_items in items_by_master_category.items()
+    filter_mean_recommendations = {
+        filter_value: get_mean_cart_recommendations([item.product.imageURL for item in filter_items])
+        for filter_value, filter_items in items_by_filter.items()
     }
 
     context = {
-        'items_by_master_category': items_by_master_category,
+        'items_by_filter': items_by_filter,
+        'filter_type': filter_type,
         'order': order,
         'cartItems': cartItems,
         'recommended_images': recommended_images,
-        'master_category_mean_recommendations': master_category_mean_recommendations,
+        'filter_mean_recommendations': filter_mean_recommendations,
     }
     return render(request, 'store/cart.html', context)
+
 
 def get_filtered_products(request):
     if request.method == 'POST':
@@ -114,6 +118,7 @@ def get_filtered_products(request):
         } for product in filtered_products]
 
         return JsonResponse(data, safe=False)
+
 
 @login_required(login_url='userlogin')
 def updateItem(request):

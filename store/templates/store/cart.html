@@ -18,6 +18,17 @@
 					</th>
 				</tr>
 			</table>
+
+			<form method="get" class="form-inline">
+                <label for="filter">Filter by: </label>
+                <select name="filter" id="filter" class="form-control ml-2">
+                    <option value="masterCategory" {% if filter_type == "masterCategory" %}selected{% endif %}>Master Category</option>
+                    <option value="subCategory" {% if filter_type == "subCategory" %}selected{% endif %}>Sub Category</option>
+                    <option value="articleType" {% if filter_type == "articleType" %}selected{% endif %}>Article Type</option>
+                </select>
+                <button type="submit" class="btn btn-primary ml-2">Apply Filter</button>
+            </form>
+			
 			<div style="flex:2"></div>
 					<div style="flex:2"><strong>Items In cart</strong></div>
 					<div style="flex:1"></div>
@@ -34,10 +45,11 @@
                 <div style="flex:2"><strong>Item</strong></div>
                 <div style="flex:1"><strong>Quantity</strong></div>
             </div>
-            {% for master_category, items in items_by_master_category.items %}
-            <h3>{{ master_category }}</h3>
-            {% for item in items %}
-                {% with item_id=item.id|stringformat:"s" %}
+			<div class="box-element">
+				{% for filter_value, items in items_by_filter.items %}
+				<h3>{{ filter_value }}</h3>
+				{% for item in items %}
+					{% with item_id=item.id|stringformat:"s" %}
             <div class="cart-row">
 				<div style="flex:2"><img class="row-image" src="{{ item.product.imageURL }}"></div>
 					<div style="flex:2"><p>{{item.product.productDisplayName}}</p></div>
@@ -57,30 +69,30 @@
 					{% for rec_image in recommended_images|get_item:item_id %}
 					<div style="flex:1">
 						<img class="row-image" src="{{ rec_image.image_url }}" alt="">
-						<p><strong>{{ rec_image.product.productDisplayName }}</strong></p>
+						<p><strong>{{ rec_image.get_related_product_name }}</strong></p>
 						<button data-product="{{ rec_image.image_url }}" data-action="add" data-source="cart" class="btn btn-outline-secondary add-btn update-cart">Add to Cart</button>
 					</div>
 				{% endfor %}	
 				</div>
-			{% endif %}
-        {% endwith %}
-    {% endfor %}
-	<div style="flex:2"></div>
-        <div style="flex:2"><strong>Mean {{ master_category }} Recommendations</strong></div>
-        <div style="flex:1"></div>
-		{% if master_category in master_category_mean_recommendations %}
-		<div class="cart-row">
-			{% for rec_image in master_category_mean_recommendations|get_item:master_category %}
-			<div style="flex:2">
-				<img class="row-image" src="{{ rec_image.image_url }}" alt="">
-				<p><strong>{{ rec_image.product.productDisplayName }}</strong></p>
-				<button data-product="{{ rec_image.image_url }}" data-action="add" data-source="cart" class="btn btn-outline-secondary add-btn update-cart">Add to Cart</button>
+				{% endif %}
+				{% endwith %}
+				{% endfor %}
+				<div style="flex:2"></div>
+				<div style="flex:2"><strong>Mean {{ filter_value }} Recommendations</strong></div>
+				<div style="flex:1"></div>
+				{% if filter_value in filter_mean_recommendations %}
+				<div class="cart-row">
+					{% for rec_image in filter_mean_recommendations|get_item:filter_value %}
+					<div style="flex:2">
+						<img class="row-image" src="{{ rec_image.image_url }}" alt="">
+						<p><strong>{{ rec_image.product_name }}</strong></p>
+						<button data-product="{{ rec_image.image_url }}" data-action="add" data-source="cart" class="btn btn-outline-secondary add-btn update-cart">Add to Cart</button>
+					</div>
+					{% endfor %}
+				</div>
+				{% endif %}
+				{% endfor %}
 			</div>
-			{% endfor %}
 		</div>
-		{% endif %}
-    {% endfor %}
-        </div>
-    </div>
-</div>
-{% endblock content %}
+	</div>
+	{% endblock content %}

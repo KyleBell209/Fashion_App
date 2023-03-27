@@ -13,4 +13,5 @@ urlpatterns = [
     path('register/', accounts.register, name="register"),
     path('logout/', accounts.userlogout, name="userlogout"),
     path('get_filtered_products/', views.get_filtered_products, name='get_filtered_products'),
+    
 ]
