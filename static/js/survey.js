@@ -116,8 +116,16 @@ document.addEventListener('DOMContentLoaded', function () {
   
     // Function to refresh the filtered products
     function refreshFilteredProducts() {
-      // Get the form data and make an AJAX request to the server to get the filtered products
+      const hasSelectedValue = formFields.some(field => field.value !== "");
+
+      if (!hasSelectedValue) {
+        const filteredProducts = document.getElementById('filtered-products');
+        filteredProducts.innerHTML = '';
+        return;
+      }
+      
       const formData = new FormData(form);
+      
       fetch('/get_filtered_products/', {
         method: 'POST',
         body: formData
@@ -144,7 +152,18 @@ document.addEventListener('DOMContentLoaded', function () {
           attachAddToCartEventListeners();
         });
       }
-  
+      
+      function handleFormSubmit(event) {
+        event.preventDefault();
+      }
+      
+      form.addEventListener('submit', handleFormSubmit);
+      
+      // Add an event listener to the form fields to listen for changes
+      formFields.forEach(field => {
+        field.addEventListener('change', refreshFilteredProducts);
+      });
+      
     // Add an event listener to the form fields to listen for changes
     formFields.forEach(field => {
       field.addEventListener('change', refreshFilteredProducts);
@@ -155,22 +174,51 @@ document.addEventListener('DOMContentLoaded', function () {
   
     // Call the refreshFilteredProducts function initially to load the products
     refreshFilteredProducts();
+    
 
     function attachAddToCartEventListeners() {
       document.querySelectorAll('.update-cart').forEach(button => {
         button.addEventListener('click', function (event) {
+          event.preventDefault(); // Add this line to prevent the form submission
           const productId = event.target.getAttribute('data-product');
           const action = event.target.getAttribute('data-action');
           const source = event.target.getAttribute('data-source') || '';
           console.log(`Product ID: ${productId}, Action: ${action}, Source: ${source}`);
     
-          if (user == 'AnonymousUser'){
+          if (user == 'AnonymousUser') {
             console.log('User is not authenticated');
           } else {
-            updateUserOrder(productId, action, source);
+            updateUserOrder(productId, action, source, event);
           }
         });
       });
     }
 
-attachAddToCartEventListeners();
+  function updateUserOrder(productId, action, source, event) {
+    event.preventDefault();
+  
+    fetch('/update_item/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': csrftoken,
+      },
+      body: JSON.stringify({'productId': productId, 'action': action, 'source': source})
+    })
+    .then((response) => {
+      return response.json();
+    })
+    .then((data) => {
+      console.log('data:', data);
+    });
+  }
+  
+  
+
+  document.addEventListener('DOMContentLoaded', function () {
+    attachAddToCartEventListeners();
+  });
+
+    
+    
+    
