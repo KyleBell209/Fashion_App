@@ -84,6 +84,8 @@ class RecommendedImage(models.Model):
     product_test = models.ForeignKey(ProductTest, on_delete=models.CASCADE, null=True, related_name='recommended_images')
     product = models.ForeignKey(ProductTest, on_delete=models.CASCADE, null=True)
     image_url = models.CharField(max_length=500, null=True)
+    masterCategory = models.CharField(max_length=200, null=True)
+    related_product_masterCategory = models.CharField(max_length=200, null=True) # Add this field
 
     def __str__(self):
         return f'RecommendedImage for {self.product}'
@@ -96,5 +98,6 @@ class RecommendedImage(models.Model):
             return related_product.productDisplayName
         else:
             return "Product not found"
+
 
 

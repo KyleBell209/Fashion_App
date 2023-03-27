@@ -17,7 +17,6 @@ document.addEventListener('DOMContentLoaded', function () {
     'Watches',
     'Belts',
     'Bags',
-    'Shoe Accessories',
     'Jewellery',
     'Eyewear',
     'Headwear',

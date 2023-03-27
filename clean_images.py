@@ -97,6 +97,21 @@ target_productDisplayName = ProductTest.objects.filter(
     Q(productDisplayName__icontains="children")
 )
 
+target_accessories = ProductTest.objects.filter(
+    masterCategory="Accessories",
+    productDisplayName__iregex=r'(shoe|sandal|flip flop|shirt)'
+)
+
+target_apparel = ProductTest.objects.filter(
+    masterCategory="Apparel",
+    productDisplayName__iregex=r'(leather belt)'
+)
+
+target_footwear = ProductTest.objects.filter(
+    masterCategory="Footwear",
+    productDisplayName__iregex=r'(shirt)'
+)
+
 # Set file permissions for the static\images\ folder
 folder_path = os.path.join(os.path.abspath(os.path.join(os.path.dirname(__file__))), "static/images")
 os.chmod(folder_path, 0o777) # Sets read, write, and execute permissions for all users
@@ -142,6 +157,29 @@ for product in target_productDisplayName:
     else:
         print(f"Image not found: {image_path}")
 
+for product in target_accessories:
+    image_path = os.path.join(folder_path, product.imagePath)
+    if os.path.exists(image_path):
+        os.remove(image_path)
+        print(f"Deleted image: {image_path}")
+    else:
+        print(f"Image not found: {image_path}")
+
+for product in target_footwear:
+    image_path = os.path.join(folder_path, product.imagePath)
+    if os.path.exists(image_path):
+        os.remove(image_path)
+        print(f"Deleted image: {image_path}")
+    else:
+        print(f"Image not found: {image_path}")
+
+for product in target_apparel:
+    image_path = os.path.join(folder_path, product.imagePath)
+    if os.path.exists(image_path):
+        os.remove(image_path)
+        print(f"Deleted image: {image_path}")
+    else:
+        print(f"Image not found: {image_path}")
 # Loop through the products and delete the associated database entries
 for product in target_masterCategories:
     product.delete()
@@ -162,6 +200,19 @@ for product in target_gender:
 for product in target_productDisplayName:
     product.delete()
     print(f"Deleted product with articleType: {product.productDisplayName}")
+
+for product in target_accessories:
+    product.delete()
+    print(f"Deleted product with masterCategory 'Accessories' and productDisplayName containing 'shoe', 'sandal', or 'flip flop': {product.productDisplayName}")
+
+for product in target_apparel:
+    product.delete()
+    print(f"Deleted product with masterCategory 'Apparel' and productDisplayName containing 'shoe', 'sandal', or 'flip flop': {product.productDisplayName}")
+
+for product in target_footwear:
+    product.delete()
+    print(f"Deleted product with masterCategory 'Footwear' and productDisplayName containing 'shoe', 'sandal', or 'flip flop': {product.productDisplayName}")
+
 
 # Reset file permissions for the static\images\ folder
 os.chmod(folder_path, 0o755) # Sets read and execute permissions for all users

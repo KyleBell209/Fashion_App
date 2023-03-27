@@ -1,4 +1,5 @@
 import os
+import re
 from .models import *
 import pickle
 import cv2
@@ -56,21 +57,39 @@ def get_feature_vector(preprocessed_img):
     normalized_result = result / norm(result)
     return normalized_result
 
+def get_related_product_masterCategory(image_url):
+    match = re.search(r'(?<=/images\\).+?(?=.jpg)', image_url)
+    if match:
+        product_id = int(match.group())
+        related_product = ProductTest.objects.get(id=product_id)
+        return related_product.masterCategory
+    else:
+        return None
+
 def get_image_recommendations(product_id):
-    existing_recommendations = RecommendedImage.objects.filter(product_test_id=product_id)
+    existing_recommendations = RecommendedImage.objects.filter(product_id=product_id)
 
     if existing_recommendations.exists():
         return existing_recommendations
 
     product = ProductTest.objects.get(id=product_id)
+    master_category = product.masterCategory
     image_url = product.imageURL
     preprocessed_img = process_image(image_url)
     normalized_result = get_feature_vector(preprocessed_img)
 
     distances, indices = neighbors.kneighbors([normalized_result])
 
-    # Assign the related product field here
-    recommended_images = [RecommendedImage(product_test_id=product_id, product=product, image_url=f'https://storage.googleapis.com/django-bucket-kb/{filenames[file]}') for file in indices[0][1:6]]
+    recommended_images = [
+        RecommendedImage(
+            product_id=product_id,
+            masterCategory=master_category,
+            related_product_masterCategory=get_related_product_masterCategory(
+                f'https://storage.googleapis.com/django-bucket-kb/{filenames[file]}'
+            ),
+            image_url=f'https://storage.googleapis.com/django-bucket-kb/{filenames[file]}'
+        ) for file in indices[0][1:6]
+    ]
     RecommendedImage.objects.bulk_create(recommended_images)
 
     return recommended_images
@@ -105,6 +124,8 @@ def get_mean_cart_recommendations(product_image_urls):
                            'product_name': get_product_name_from_url(f'https://storage.googleapis.com/django-bucket-kb/{filenames[file]}')}
                           for file in indices[0][1:]]
     return recommended_images
+
+    
 
 
 def get_recommended_products(product_list, user_preferences):
