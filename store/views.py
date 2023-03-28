@@ -10,6 +10,7 @@ from numpy.linalg import norm
 from .recommendations import get_image_recommendations, get_recommended_products, get_mean_cart_recommendations
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
+from collections import Counter
 
 @login_required(login_url='userlogin')
 def store(request):
@@ -80,10 +81,16 @@ def cart(request):
         recommended_images[str(item.id)] = get_image_recommendations(item.product.id)
         product_image_urls.append(item.product.imageURL)
 
-    mean_cart_recommendations = get_mean_cart_recommendations(product_image_urls)
+    # Find the most common masterCategory among the cart items
+    master_categories = [item.product.masterCategory for item in items]
+    most_common_master_category = None
+    if master_categories:
+        most_common_master_category = Counter(master_categories).most_common(1)[0][0]
+
+    mean_cart_recommendations = get_mean_cart_recommendations(product_image_urls, master_category=most_common_master_category)
 
     filter_mean_recommendations = {
-        filter_value: get_mean_cart_recommendations([item.product.imageURL for item in filter_items])
+        filter_value: get_mean_cart_recommendations([item.product.imageURL for item in filter_items], master_category=most_common_master_category)
         for filter_value, filter_items in items_by_filter.items()
     }
 

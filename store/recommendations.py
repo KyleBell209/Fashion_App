@@ -106,7 +106,7 @@ def process_image_and_extract_features(image_source):
     preprocessed_img = process_image(image_source)
     return get_feature_vector(preprocessed_img)
 
-def get_mean_cart_recommendations(product_image_urls):
+def get_mean_cart_recommendations(product_image_urls, master_category=None):
     if len(product_image_urls) == 0:
         return []
 
@@ -119,18 +119,27 @@ def get_mean_cart_recommendations(product_image_urls):
 
     distances, indices = neighbors.kneighbors(mean_feature_vector)
 
-    def get_product_name_from_url(image_url):
+    def get_product_name_and_master_category_from_url(image_url):
         match = re.search(r'(?<=/images\\).+?(?=.jpg)', image_url)
         if match:
             product_id = int(match.group())
             related_product = ProductTest.objects.get(id=product_id)
-            return related_product.productDisplayName
+            return related_product.productDisplayName, related_product.masterCategory
         else:
-            return "Product not found"
+            return "Product not found", None
 
-    recommended_images = [{'image_url': f'https://storage.googleapis.com/django-bucket-kb/{filenames[file]}',
-                           'product_name': get_product_name_from_url(f'https://storage.googleapis.com/django-bucket-kb/{filenames[file]}')}
-                          for file in indices[0][1:]]
+    recommended_images = [
+        {
+            'image_url': f'https://storage.googleapis.com/django-bucket-kb/{filenames[file]}',
+            'product_name': get_product_name_and_master_category_from_url(f'https://storage.googleapis.com/django-bucket-kb/{filenames[file]}')[0],
+            'master_category': get_product_name_and_master_category_from_url(f'https://storage.googleapis.com/django-bucket-kb/{filenames[file]}')[1],
+        }
+        for file in indices[0][1:]
+    ]
+
+    if master_category:
+        recommended_images = [img for img in recommended_images if img['master_category'] == master_category]
+
     return recommended_images
 
     
