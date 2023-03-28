@@ -83,7 +83,7 @@ def cart(request):
     mean_cart_recommendations = get_mean_cart_recommendations(product_image_urls)
 
     filter_mean_recommendations = {
-        filter_value: get_mean_cart_recommendations([item.product.imageURL for item in filter_items])
+        filter_value: get_mean_cart_recommendations([item.product.imageURL for item in filter_items], master_category=filter_value)
         for filter_value, filter_items in items_by_filter.items()
     }
 

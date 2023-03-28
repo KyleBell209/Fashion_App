@@ -98,7 +98,7 @@ def process_image_and_extract_features(image_source):
     preprocessed_img = process_image(image_source)
     return get_feature_vector(preprocessed_img)
 
-def get_mean_cart_recommendations(product_image_urls):
+def get_mean_cart_recommendations(product_image_urls, master_category=None):
     if len(product_image_urls) == 0:
         return []
 
@@ -121,10 +121,15 @@ def get_mean_cart_recommendations(product_image_urls):
             return "Product not found"
 
     recommended_images = [{'image_url': f'https://storage.googleapis.com/django-bucket-kb/{filenames[file]}',
-                           'product_name': get_product_name_from_url(f'https://storage.googleapis.com/django-bucket-kb/{filenames[file]}')}
+                           'product_name': get_product_name_from_url(f'https://storage.googleapis.com/django-bucket-kb/{filenames[file]}'),
+                           'master_category': get_related_product_masterCategory(f'https://storage.googleapis.com/django-bucket-kb/{filenames[file]}')}
                           for file in indices[0][1:]]
-    return recommended_images
 
+    # Filter recommendations based on the master_category
+    if master_category is not None:
+        recommended_images = [rec_image for rec_image in recommended_images if rec_image['master_category'] == master_category]
+
+    return recommended_images
     
 
 
