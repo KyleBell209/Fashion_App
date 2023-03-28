@@ -99,5 +99,13 @@ class RecommendedImage(models.Model):
         else:
             return "Product not found"
 
+    def get_related_product_masterCategory(self):
+        match = re.search(r'(?<=/images\\).+?(?=.jpg)', self.image_url)
+        if match:
+            product_id = int(match.group())
+            related_product = ProductTest.objects.get(id=product_id)
+            return related_product.masterCategory
+        else:
+            return None
 
 
