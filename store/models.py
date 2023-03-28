@@ -107,3 +107,4 @@ class RecommendedImage(models.Model):
             return related_product.masterCategory
         else:
             return None
+

@@ -33,8 +33,6 @@ filenames = pickle.load(open('filenames.pkl', 'rb'))
 neighbors = NearestNeighbors(n_neighbors=11, algorithm='brute', metric='euclidean')
 neighbors.fit(feature_list)
 
-from .models import RecommendedImage
-
 def process_image(image_source):
     if image_source.startswith('http'):  # If the image_source is a URL
         response = requests.get(image_source)
@@ -74,6 +72,7 @@ def get_image_recommendations(product_id):
 
     product = ProductTest.objects.get(id=product_id)
     master_category = product.masterCategory
+    product_gender = product.gender  # Fetch product gender
     image_url = product.imageURL
     preprocessed_img = process_image(image_url)
     normalized_result = get_feature_vector(preprocessed_img)
@@ -88,8 +87,12 @@ def get_image_recommendations(product_id):
                 f'https://storage.googleapis.com/django-bucket-kb/{filenames[file]}'
             ),
             image_url=f'https://storage.googleapis.com/django-bucket-kb/{filenames[file]}'
-        ) for file in indices[0][1:6]
+        ) for file in indices[0][1:6] if ProductTest.objects.get(id=int(re.search(r'(?<=/images\\).+?(?=.jpg)', f'https://storage.googleapis.com/django-bucket-kb/{filenames[file]}').group())).gender == product_gender
     ]
+
+    # Filter images based on product_gender
+    recommended_images = [rec_image for rec_image in recommended_images if rec_image.product.gender == product_gender]
+
     RecommendedImage.objects.bulk_create(recommended_images)
 
     return recommended_images
@@ -98,7 +101,7 @@ def process_image_and_extract_features(image_source):
     preprocessed_img = process_image(image_source)
     return get_feature_vector(preprocessed_img)
 
-def get_mean_cart_recommendations(product_image_urls, master_category=None):
+def get_mean_cart_recommendations(product_image_urls, master_category=None, gender=None):
     if len(product_image_urls) == 0:
         return []
 
@@ -128,6 +131,9 @@ def get_mean_cart_recommendations(product_image_urls, master_category=None):
     # Filter recommendations based on the master_category
     if master_category is not None:
         recommended_images = [rec_image for rec_image in recommended_images if rec_image['master_category'] == master_category]
+
+    if gender is not None:
+        recommended_images = [rec_image for rec_image in recommended_images if ProductTest.objects.get(id=int(re.search(r'(?<=/images\\).+?(?=.jpg)', rec_image['image_url']).group())).gender == gender]
 
     return recommended_images
     
