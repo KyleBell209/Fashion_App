@@ -90,9 +90,17 @@ def get_image_recommendations(product_id):
             image_url=f'https://storage.googleapis.com/django-bucket-kb/{filenames[file]}'
         ) for file in indices[0][1:6]
     ]
-    RecommendedImage.objects.bulk_create(recommended_images)
 
-    return recommended_images
+    # Filter out recommended images with mismatched masterCategory
+    filtered_recommended_images = [
+        img for img in recommended_images
+        if img.masterCategory == img.related_product_masterCategory
+    ]
+
+    # Bulk create the filtered recommended images
+    RecommendedImage.objects.bulk_create(filtered_recommended_images)
+
+    return filtered_recommended_images
 
 def process_image_and_extract_features(image_source):
     preprocessed_img = process_image(image_source)
