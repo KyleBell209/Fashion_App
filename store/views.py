@@ -4,12 +4,17 @@ import json
 from .accounts import *
 from .models import * 
 import os
+from django.conf import settings
 import re
 import random
 from numpy.linalg import norm
 from .recommendations import get_image_recommendations, get_recommended_products, get_mean_cart_recommendations
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseRedirect
+from django.urls import reverse
+from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib import messages
 
 @login_required(login_url='userlogin')
 def store(request):
@@ -28,6 +33,21 @@ def store(request):
 
     context = {'page_obj': page_obj, 'cartItems': cartItems}
     return render(request, 'store/store.html', context)
+
+@staff_member_required
+def delete_product(request, product_id):
+    product = ProductTest.objects.get(id=product_id)
+    image_path = os.path.join(settings.MEDIA_ROOT, str(product.imageURL))
+
+    # Delete the image file
+    if os.path.exists(image_path):
+        os.remove(image_path)
+
+    # Delete the product from the database
+    product.delete()
+
+    messages.success(request, f"Product {product.productDisplayName} has been deleted.")
+    return HttpResponseRedirect(reverse('store'))
 
 def filter_products_by_preferences(product_list, preferences):
     filtered_products = product_list

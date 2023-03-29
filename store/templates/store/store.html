@@ -8,9 +8,15 @@
 			<img class="thumbnail" src="{{ MEDIA_URL }}{{ product.imageURL }}">
 			<div class="box-element product">
 				<h6><strong>{{product.productDisplayName}}</strong></h6>
-				<p>{{product.articleType}}</p>
 				<hr>
-				<button data-product="{{product.id}}" data-action="add" class="btn btn-outline-secondary add-btn update-cart">Add to Cart</button>	
+				<button data-product="{{product.id}}" data-action="add" class="btn btn-outline-secondary add-btn update-cart">Add to Cart</button>
+
+				{% if request.user.is_superuser %}
+				<form method="post" action="{% url 'delete_product' product.id %}">
+					{% csrf_token %}
+					<button type="submit" class="btn btn-danger">DELETE</button>
+				</form>
+				{% endif %}
 			</div>
 		</div>
 	{% endfor %}
