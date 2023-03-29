@@ -79,29 +79,42 @@ def get_image_recommendations(product_id):
 
     distances, indices = neighbors.kneighbors([normalized_result])
 
-    recommended_images = [
-        RecommendedImage(
-            product_id=product_id,
-            masterCategory=master_category,
-            related_product_masterCategory=get_related_product_masterCategory(
-                f'https://storage.googleapis.com/django-bucket-kb/{filenames[file]}'
-            ),
-            image_url=f'https://storage.googleapis.com/django-bucket-kb/{filenames[file]}'
-        ) for file in indices[0][1:6] if ProductTest.objects.get(id=int(re.search(r'(?<=/images\\).+?(?=.jpg)', f'https://storage.googleapis.com/django-bucket-kb/{filenames[file]}').group())).gender == product_gender
-    ]
+    if product_gender:  # If product_gender is set, filter based on gender
+        recommended_images = [
+            RecommendedImage(
+                product_id=product_id,
+                masterCategory=master_category,
+                related_product_masterCategory=get_related_product_masterCategory(
+                    f'https://storage.googleapis.com/django-bucket-kb/{filenames[file]}'
+                ),
+                image_url=f'https://storage.googleapis.com/django-bucket-kb/{filenames[file]}'
+            ) for file in indices[0][1:6] if ProductTest.objects.get(id=int(re.search(r'(?<=/images\\).+?(?=.jpg)', f'https://storage.googleapis.com/django-bucket-kb/{filenames[file]}').group())).gender == product_gender
+        ]
+    else:  # If product_gender is not set, do not filter based on gender
+        recommended_images = [
+            RecommendedImage(
+                product_id=product_id,
+                masterCategory=master_category,
+                related_product_masterCategory=get_related_product_masterCategory(
+                    f'https://storage.googleapis.com/django-bucket-kb/{filenames[file]}'
+                ),
+                image_url=f'https://storage.googleapis.com/django-bucket-kb/{filenames[file]}'
+            ) for file in indices[0][1:6]
+        ]
 
     # Filter images based on product_gender
-    recommended_images = [rec_image for rec_image in recommended_images if rec_image.product.gender == product_gender]
+    recommended_images = [rec_image for rec_image in recommended_images if not product_gender or rec_image.product.gender == product_gender]
 
     RecommendedImage.objects.bulk_create(recommended_images)
 
     return recommended_images
 
+
 def process_image_and_extract_features(image_source):
     preprocessed_img = process_image(image_source)
     return get_feature_vector(preprocessed_img)
 
-def get_mean_cart_recommendations(product_image_urls, master_category=None, gender=None):
+def get_mean_cart_recommendations(product_image_urls, master_category=None, gender=None, articleType=None, subCategory=None):
     if len(product_image_urls) == 0:
         return []
 
@@ -128,15 +141,19 @@ def get_mean_cart_recommendations(product_image_urls, master_category=None, gend
                            'master_category': get_related_product_masterCategory(f'https://storage.googleapis.com/django-bucket-kb/{filenames[file]}')}
                           for file in indices[0][1:]]
 
-    # Filter recommendations based on the master_category
     if master_category is not None:
-        recommended_images = [rec_image for rec_image in recommended_images if rec_image['master_category'] == master_category]
+            recommended_images = [rec_image for rec_image in recommended_images if rec_image['master_category'] == master_category]
 
     if gender is not None:
-        recommended_images = [rec_image for rec_image in recommended_images if ProductTest.objects.get(id=int(re.search(r'(?<=/images\\).+?(?=.jpg)', rec_image['image_url']).group())).gender == gender]
+            recommended_images = [rec_image for rec_image in recommended_images if ProductTest.objects.get(id=int(re.search(r'(?<=/images\\).+?(?=.jpg)', rec_image['image_url']).group())).gender == gender]
+
+    if articleType is not None:
+            recommended_images = [rec_image for rec_image in recommended_images if ProductTest.objects.get(id=int(re.search(r'(?<=/images\\).+?(?=.jpg)', rec_image['image_url']).group())).articleType == articleType]
+
+    if subCategory is not None:
+            recommended_images = [rec_image for rec_image in recommended_images if ProductTest.objects.get(id=int(re.search(r'(?<=/images\\).+?(?=.jpg)', rec_image['image_url']).group())).subCategory == subCategory]
 
     return recommended_images
-    
 
 
 def get_recommended_products(product_list, user_preferences):

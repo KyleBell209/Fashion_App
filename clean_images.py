@@ -3,6 +3,7 @@ import sys
 import django
 from pathlib import Path
 from django.db.models import Q
+from django.db.models import Count
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ecommerce.settings')
 django.setup()
@@ -112,6 +113,9 @@ target_footwear = ProductTest.objects.filter(
     productDisplayName__iregex=r'(shirt)'
 )
 
+#removing broken imagepath as it is assigned to many broken products as placeholder
+target_imagePath = ProductTest.objects.filter(imagePath__icontains="1165")
+
 # Set file permissions for the static\images\ folder
 folder_path = os.path.join(os.path.abspath(os.path.join(os.path.dirname(__file__))), "static/images")
 os.chmod(folder_path, 0o777) # Sets read, write, and execute permissions for all users
@@ -213,6 +217,32 @@ for product in target_footwear:
     product.delete()
     print(f"Deleted product with masterCategory 'Footwear' and productDisplayName containing 'shoe', 'sandal', or 'flip flop': {product.productDisplayName}")
 
+
+# Loop through the products with imagePath containing '1165' and delete the associated images
+for product in target_imagePath:
+    image_path = os.path.join(folder_path, product.imagePath)
+    if os.path.exists(image_path):
+        os.remove(image_path)
+        print(f"Deleted image: {image_path}")
+    else:
+        print(f"Image not found: {image_path}")
+
+# Loop through the products with imagePath containing '1165' and delete the associated database entries
+for product in target_imagePath:
+    product.delete()
+    print(f"Deleted product with imagePath containing '1165': {product.imagePath}")
+
+# Find products with duplicate imagePaths
+duplicate_imagePaths = ProductTest.objects.values('imagePath').annotate(
+    duplicates=Count('imagePath')).filter(duplicates__gt=1)
+
+# Print details of products with duplicate imagePaths
+for duplicate_imagePath in duplicate_imagePaths:
+    duplicate_products = ProductTest.objects.filter(
+        imagePath=duplicate_imagePath['imagePath'])
+    print(f"Duplicate imagePath: {duplicate_imagePath['imagePath']}")
+    for product in duplicate_products:
+        print(f"  Product ID: {product.id}, Product Name: {product.productDisplayName}")
 
 # Reset file permissions for the static\images\ folder
 os.chmod(folder_path, 0o755) # Sets read and execute permissions for all users

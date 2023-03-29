@@ -80,6 +80,7 @@ class OrderItem(models.Model):
             self.name = self.product.productDisplayName
         super(OrderItem, self).save(*args, **kwargs)
 
+
 class RecommendedImage(models.Model):
     product_test = models.ForeignKey(ProductTest, on_delete=models.CASCADE, null=True, related_name='recommended_images')
     product = models.ForeignKey(ProductTest, on_delete=models.CASCADE, null=True)

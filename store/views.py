@@ -48,11 +48,19 @@ def survey(request):
     if request.method == 'POST':
         customer = request.user.customer
         preferences, created = UserPreference.objects.get_or_create(customer=customer)
+        
+        # Save previous gender preference
+        prev_gender = preferences.gender
+
         for field in ['gender', 'masterCategory', 'subCategory', 'articleType', 'baseColour', 'season', 'year', 'usage']:
             setattr(preferences, field, request.POST.get(field))
         preferences.save()
         customer.preferences = preferences
         customer.save()
+
+        # Update order after saving preferences
+        order, _ = Order.objects.get_or_create(customer=customer, complete=False)        
+
         return redirect('store')
 
     product_list = ProductTest.objects.all()
@@ -80,10 +88,12 @@ def cart(request):
         recommended_images[str(item.id)] = get_image_recommendations(item.product.id)
         product_image_urls.append(item.product.imageURL)
 
-    mean_cart_recommendations = get_mean_cart_recommendations(product_image_urls, gender=customer.preferences.gender)
+    user_gender = customer.preferences.gender if customer.preferences and customer.preferences.gender else None
+
+    mean_cart_recommendations = get_mean_cart_recommendations(product_image_urls, gender=user_gender)
 
     filter_mean_recommendations = {
-        filter_value: get_mean_cart_recommendations([item.product.imageURL for item in filter_items], master_category=filter_value, gender=customer.preferences.gender)
+        filter_value: get_mean_cart_recommendations([item.product.imageURL for item in filter_items], master_category=filter_value if filter_type == 'masterCategory' else None, gender=user_gender, articleType=filter_value if filter_type == 'articleType' else None, subCategory=filter_value if filter_type == 'subCategory' else None)
         for filter_value, filter_items in items_by_filter.items()
     }
 
