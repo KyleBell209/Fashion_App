@@ -4,8 +4,58 @@ document.addEventListener('DOMContentLoaded', function () {
   const articleType = document.getElementById('articleType');
   const gender = document.getElementById('gender');
 
+  //Event listener to the gender field to listen for changes
+  gender.addEventListener('change', refreshFilteredProducts);
 
+  function filterOptionsByGender(options, genderRestrictions, selectedGender, selectedSubCategory) {
+    return options.filter(option => {
+      if (!genderRestrictions) {
+        return true;
+      }
   
+      if (typeof genderRestrictions[selectedSubCategory] === 'boolean') {
+        return genderRestrictions[selectedSubCategory] === false;
+      } else if (Array.isArray(genderRestrictions[selectedSubCategory])) {
+        return !genderRestrictions[selectedSubCategory].includes(option);
+      }
+      return true;
+    });
+  }
+
+  // Men's restrictions
+  const menRestrictions = {
+    'Apparel': {
+      'Dress': true,
+      'Apparel Set': true,
+      'Topwear': ['Tunics', 'Shrug'],
+      'Bottomwear': ['Skirts', 'Stockings', 'Leggings', 'Capris'],
+      'Loungewear and Nightwear': ['Nightdress', 'Robe', 'Lounge Tshirts']
+    },
+    'Accessories': {
+      'Bags': ['Clutches', 'Trolley Bag', 'Mobile Pouch', 'Rucksacks', 'Tablet Sleeve', 'Trolley Bag']
+    },
+    'Footwear': {
+      'Shoes': ['Heels', 'Flats']
+    }
+  };
+
+  // Women's restrictions
+  const womenRestrictions = {
+    'Apparel': {
+      'Topwear': ['Suspenders'],
+      'Bottomwear': ['Rain Trousers']
+    },
+    'Accessories': {
+      'Ties': true,
+      'Gloves': true,
+      'Cufflinks': true,
+      'Sports Accessories': true,
+      'Bags': ['Messenger Bag', 'Rucksacks', 'Trolley Bag', 'Waist Pouch']
+    },
+    'Footwear': {
+      'Shoes': ['Formal Shoes']
+    }
+  };
 
   const apparelOptions = [
     'Topwear',
@@ -53,11 +103,7 @@ document.addEventListener('DOMContentLoaded', function () {
       const optionElement = document.createElement('option');
       optionElement.value = option;
       optionElement.textContent = option;
-
-      if (user_preferences.subCategory === option) {
-        optionElement.selected = true;
-      }
-
+    
       subCategory.appendChild(optionElement);
     });
   }
@@ -69,46 +115,79 @@ document.addEventListener('DOMContentLoaded', function () {
       const optionElement = document.createElement('option');
       optionElement.value = option;
       optionElement.textContent = option;
-
+    
       articleType.appendChild(optionElement);
     });
   }
 
   function onMasterCategoryChange() {
-    if (masterCategory.value === 'Apparel') {
-      updateSubCategoryOptions(apparelOptions);
-    } else if (masterCategory.value === 'Accessories') {
-      updateSubCategoryOptions(accessoriesOptions);
-    } else if (masterCategory.value === 'Footwear') {
-      updateSubCategoryOptions(footwearOptions);
+    const selectedMasterCategory = masterCategory.value;
+    let subCategoryOptions;
+    const selectedGender = gender.value;
+  
+    if (selectedMasterCategory === 'Apparel') {
+      subCategoryOptions = apparelOptions;
+    } else if (selectedMasterCategory === 'Accessories') {
+      subCategoryOptions = accessoriesOptions;
+    } else if (selectedMasterCategory === 'Footwear') {
+      subCategoryOptions = footwearOptions;
     } else {
       subCategory.innerHTML = '<option value="">Select</option>';
+      articleType.innerHTML = '<option value="">Select</option>';
+      return;
     }
+  
+    if (selectedGender === 'Men') {
+      subCategoryOptions = filterOptionsByGender(subCategoryOptions, menRestrictions[selectedMasterCategory], selectedGender);
+    } else if (selectedGender === 'Women') {
+      subCategoryOptions = filterOptionsByGender(subCategoryOptions, womenRestrictions[selectedMasterCategory], selectedGender);
+    }
+  
+    updateSubCategoryOptions(subCategoryOptions);
     articleType.innerHTML = '<option value="">Select</option>';
   }
-
+  
   function onSubCategoryChange() {
     const selectedSubCategory = subCategory.value;
+    let articleTypeOptionsForSubCategory;
     if (articleTypeOptions[selectedSubCategory]) {
-      updateArticleTypeOptions(articleTypeOptions[selectedSubCategory]);
+      articleTypeOptionsForSubCategory = articleTypeOptions[selectedSubCategory];
     } else {
       articleType.innerHTML = '<option value="">Select</option>';
+      return;
     }
+  
+    let restrictions;
+    if (gender.value === 'Men' && menRestrictions[masterCategory.value] && menRestrictions[masterCategory.value][selectedSubCategory]) {
+      restrictions = menRestrictions[masterCategory.value];
+    } else if (gender.value === 'Women' && womenRestrictions[masterCategory.value] && womenRestrictions[masterCategory.value][selectedSubCategory]) {
+      restrictions = womenRestrictions[masterCategory.value];
+    } else {
+      restrictions = gender.value === 'Men' ? menRestrictions : womenRestrictions;
+    }
+  
+    articleTypeOptionsForSubCategory = filterOptionsByGender(articleTypeOptionsForSubCategory, restrictions, gender.value, selectedSubCategory);
+    updateArticleTypeOptions(articleTypeOptionsForSubCategory);
   }
-
+  
   masterCategory.addEventListener('change', onMasterCategoryChange);
   subCategory.addEventListener('change', onSubCategoryChange);
-
+  
   if (user_preferences.masterCategory) {
-  masterCategory.value = user_preferences.masterCategory;
-  onMasterCategoryChange();
+    masterCategory.value = user_preferences.masterCategory;
+    onMasterCategoryChange();
   }
-    
+  
   if (user_preferences.subCategory) {
-  subCategory.value = user_preferences.subCategory;
-  onSubCategoryChange();
+    subCategory.value = user_preferences.subCategory;
+    onSubCategoryChange();
   }
+  
+  gender.addEventListener('change', function () {
+    onMasterCategoryChange();
+    onSubCategoryChange();
   });
+});
     
     // Get the form and form fields
     const form = document.getElementById('preferences-form');
