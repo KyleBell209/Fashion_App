@@ -35,48 +35,40 @@
 </head>
 <body>
 
-	<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-	  <a class="navbar-brand" href="{% url 'store' %}">StyleVision</a>
-	  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-	    <span class="navbar-toggler-icon"></span>
-	  </button>
-
-	  <div class="collapse navbar-collapse" id="navbarSupportedContent">
-	    <ul class="navbar-nav mr-auto">
-	      <li class="nav-item active">
-	      </li>
-	 
-	    </ul>
-
-		<ul class="navbar-nav ms-auto">
-
-			<li class="nav-item">
-			  <span class="user-message">Logged in as {{request.user}}</span>
-			</li>
-		  
-			{% if user.is_authenticated %}
-			<li class="nav-item">
-			  <a href="/logout" class="btn btn-warning" id="accountbtn">Logout</a>
-			</li>
-			<li class="nav-item">
-			  <a href="/survey" class="btn btn-warning" id="accountbtn">Profile</a>
-			</li>
-			<li class="nav-item">
-			  <a href="{% url 'cart' %}">
-				<img id="cart-icon" src="{% static 'icons/cart.png' %}">
-			  </a>
-			</li>
-			{% else %}
-			<li class="nav-item">
-			  <a href="/login" class="btn btn-warning" id="accountbtn">Login</a>
-			</li>
-			<li class="nav-item">
-			  <a href="/register" class="btn btn-warning" id="accountbtn">Register</a>
-			</li>
-			{% endif %}
-		  </ul>
-	  </div>
-	</nav>
+	<nav class="navbar navbar-expand-lg navbar-dark bg-dark navbar-custom">
+		  <div class="navbar-header">
+			<a class="navbar-brand navbar-brand-custom" href="{% url 'store' %}">Style👀Vision</a>
+		  </div>
+		  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		  </button>
+		  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+			<ul class="navbar-nav ms-auto">
+			  <li class="nav-item dropdown">
+				<a class="nav-link dropdown-toggle user-profile" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				  User Options
+				</a>
+				<div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+				  {% if user.is_authenticated %}
+				  <a href="/logout" class="dropdown-item">Logout</a>
+				  <a href="/survey" class="dropdown-item">Profile</a>
+				  {% else %}
+				  <a href="/login" class="dropdown-item">Login</a>
+				  <a href="/register" class="dropdown-item">Register</a>
+				  {% endif %}
+				</div>
+			  </li>
+			  <li class="nav-item">
+				<a href="{% url 'cart' %}">
+				  <img id="cart-icon" src="{% static 'icons/cart.png' %}">
+				</a>
+			  </li>
+			</ul>
+		  </div>
+		</div>
+	  </nav>
+	  
+	  
 
      <div class="container">
             <br>

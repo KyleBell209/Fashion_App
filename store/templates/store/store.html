@@ -2,23 +2,62 @@
 {% load static %}
 {% block content %}
 <div class="row">
-	{% for product in page_obj %}
-	
-		<div class="col-lg-4">
-			<img class="thumbnail" src="{{ MEDIA_URL }}{{ product.imageURL }}">
-			<div class="box-element product">
-				<h6><strong>{{product.productDisplayName}}</strong></h6>
-				<hr>
-				<button data-product="{{product.id}}" data-action="add" class="btn btn-outline-secondary add-btn update-cart">Add to Cart</button>
-
-				{% if request.user.is_superuser %}
-				<form method="post" action="{% url 'delete_product' product.id %}">
-					{% csrf_token %}
-					<button type="submit" class="btn btn-danger">DELETE</button>
-				</form>
-				{% endif %}
+	<div class="col-lg-12">
+		<form method="GET" action="{% url 'store' %}">
+			<input type="text" name="q" placeholder="Search by product name" value="{{ request.GET.q }}">
+			<button type="submit" class="btn btn-primary">Search</button>
+		</form>
+		<hr>
+	</div>
+	<!-- Dropdown menus -->
+	<div class="col-lg-12 d-flex">
+		<div class="dropdown mr-3">
+			<button class="btn btn-primary dropdown-toggle" type="button" id="masterCategoryDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				Master Category
+			</button>
+			<div class="dropdown-menu" aria-labelledby="masterCategoryDropdown">
+				<a class="dropdown-item" href="#">Test</a>
 			</div>
 		</div>
+		<div class="dropdown mr-3">
+			<button class="btn btn-primary dropdown-toggle" type="button" id="subCategoryDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				Sub Category
+			</button>
+			<div class="dropdown-menu" aria-labelledby="subCategoryDropdown">
+				<a class="dropdown-item" href="#">Test</a>
+			</div>
+		</div>
+		<div class="dropdown">
+			<button class="btn btn-primary dropdown-toggle" type="button" id="articleTypeDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				Article Type
+			</button>
+			<div class="dropdown-menu" aria-labelledby="articleTypeDropdown">
+				<a class="dropdown-item" href="#">Test</a>
+			</div>
+		</div>
+	</div>
+	<!-- End of dropdown menus -->
+	<hr>
+	{% for product in page_obj %}
+		{% if not request.GET.q or request.GET.q|lower in product.productDisplayName|lower %}
+			<div class="col-lg-4">
+				<img class="thumbnail" src="{{ MEDIA_URL }}{{ product.imageURL }}">
+				<div class="box-element product">
+					<h6><strong>{{product.productDisplayName}}</strong></h6>
+					<h7><strong>{{product.masterCategory}}</strong></h7>
+					<h8><strong>{{product.subCategory}}</strong></h8>
+					<hr>
+					<button data-product="{{product.id}}" data-action="add" class="btn btn-outline-secondary add-btn update-cart">Add to Cart</button>
+
+					{% if request.user.is_superuser %}
+					<form method="post" action="{% url 'delete_product' product.id %}">
+						{% csrf_token %}
+						<button type="submit" class="btn btn-danger">DELETE</button>
+					</form>
+					{% endif %}
+				</div>
+			</div>
+		{% endif %}
 	{% endfor %}
 </div>
 
@@ -26,8 +65,8 @@
 <div class="pagination">
 	<span class="step-links">
 		{% if page_obj.has_previous %}
-			<a href="?page=1">&laquo; first</a>
-			<a href="?page={{ page_obj.previous_page_number }}">previous</a>
+			<a href="?page=1{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">&laquo; first</a>
+			<a href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">previous</a>
 		{% endif %}
 
 		<span class="current-page">
@@ -35,10 +74,17 @@
 		</span>
 
 		{% if page_obj.has_next %}
-			<a href="?page={{ page_obj.next_page_number }}">next</a>
-			<a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+			<a href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">next</a>
+			<a href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">last &raquo;</a>
 		{% endif %}
 	</span>
 </div>
 
 {% endblock content %}
+
+{% block extra_js %}
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="{% static 'js/survey.js' %}"></script>
+{% endblock %}

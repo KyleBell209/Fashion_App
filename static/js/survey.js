@@ -2,12 +2,14 @@ document.addEventListener('DOMContentLoaded', function () {
   const masterCategory = document.getElementById('masterCategory');
   const subCategory = document.getElementById('subCategory');
   const articleType = document.getElementById('articleType');
+  const gender = document.getElementById('gender');
 
+
+  
 
   const apparelOptions = [
     'Topwear',
     'Bottomwear',
-    'Saree',
     'Dress',
     'Loungewear and Nightwear',
     'Apparel Set',
@@ -20,7 +22,6 @@ document.addEventListener('DOMContentLoaded', function () {
     'Jewellery',
     'Eyewear',
     'Headwear',
-    'Mufflers',
     'Ties',
     'Gloves',
     'Sports Accessories',
@@ -32,9 +33,9 @@ document.addEventListener('DOMContentLoaded', function () {
   const footwearOptions = ['Shoes', 'Flip Flops', 'Sandal'];
   const articleTypeOptions = {
     'Accessories': ['Accessory Gift Set', 'Key Chain'],
-    'Apparel Set': ['Kurta Sets', 'Swimwear'],
+    'Apparel Set': ['Swimwear'],
     'Bags': ['Backpacks', 'Clutches', 'Duffel Bag', 'Handbags', 'Laptop Bag', 'Mobile Pouch', 'Messenger Bag', 'Rucksacks', 'Tablet Sleeve', 'Trolley Bag', 'Waist Pouch'],
-    'Bottomwear': ['Capris', 'Jeans', 'Leggings', 'Patiala', 'Rain Trousers', 'Salwar', 'Salwar and Dupatta', 'Shorts', 'Skirts', 'Stockings', 'Swimwear', 'Track Pants', 'Trousers'],
+    'Bottomwear': ['Capris', 'Jeans', 'Leggings', 'Rain Trousers', 'Shorts', 'Skirts', 'Stockings', 'Swimwear', 'Track Pants', 'Trousers'],
     'Cufflinks': ['Cufflinks', 'Cufflinks and Ties'],
     'Dresses': ['Dresses', 'Jumpsuit'],
     'Headwear': ['Cap', 'Hat', 'Headband'],
@@ -42,7 +43,7 @@ document.addEventListener('DOMContentLoaded', function () {
     'Loungewear and Nightwear': ['Lounge Pants', 'Lounge Shorts', 'Lounge Tshirts', 'Night suits', 'Nightdress', 'Robe', 'Shorts'],
     'Sandals': ['Sandals', 'Sports Sandals'],
     'Shoes': ['Casual Shoes', 'Flats', 'Formal Shoes', 'Heels', 'Sports Shoes'],
-    'Topwear': ['Tops', 'Tshirts', 'Blazers', 'Dupatta', 'Jackets', 'Kurtas', 'Shirts', 'Shrug', 'Suits', 'Suspenders', 'Sweaters', 'Sweatshirts', 'Tunics', 'Waistcoat'],
+    'Topwear': ['Tops', 'Tshirts', 'Blazers', 'Jackets', 'Shirts', 'Shrug','Suspenders', 'Sweaters', 'Sweatshirts', 'Tunics', 'Waistcoat'],
   };
 
   function updateSubCategoryOptions(options) {

@@ -15,6 +15,7 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib import messages
+from math import ceil
 
 @login_required(login_url='userlogin')
 def store(request):
@@ -27,9 +28,23 @@ def store(request):
     user_preferences = request.user.customer.preferences
     recommended_products = get_recommended_products(product_list, user_preferences)
 
-    paginator = Paginator(recommended_products, 20)  # Show 20 products per page
-    page_number = request.GET.get('page')
+    # Determine the number of products to show per page
+    num_products_per_page = 20
+    total_num_products = len(recommended_products)
+    remaining_products = total_num_products % num_products_per_page
+    if remaining_products == 0:
+        num_pages = total_num_products // num_products_per_page
+    else:
+        num_pages = total_num_products // num_products_per_page + 1
+
+    paginator = Paginator(recommended_products, num_products_per_page)
+    page_number = request.GET.get('page', 1)
     page_obj = paginator.get_page(page_number)
+
+    # If this is the last page, adjust the number of products per page to be equal to the remaining products
+    if page_obj.number == num_pages and remaining_products != 0:
+        paginator = Paginator(recommended_products, remaining_products)
+        page_obj = paginator.get_page(page_number)
 
     context = {'page_obj': page_obj, 'cartItems': cartItems}
     return render(request, 'store/store.html', context)

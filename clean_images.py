@@ -84,6 +84,14 @@ target_categories = [
     "Umbrella",
     "Boys",
     "Girls",
+    "Ethnic",
+    "Kurtas",
+    "Saree"
+    "Dupatta",
+    "Salwar",
+    "Churidar",
+    "Salwar and Dupatta"
+    "Patiala",
 ]
 
 # Retrieve the products with the specified category values
@@ -91,6 +99,7 @@ target_masterCategories = ProductTest.objects.filter(masterCategory__in=target_c
 target_subCategories = ProductTest.objects.filter(subCategory__in=target_categories)
 target_articleType = ProductTest.objects.filter(articleType__in=target_categories)
 target_gender = ProductTest.objects.filter(gender__in=target_categories)
+target_usage = ProductTest.objects.filter(usage__in=target_categories)
 target_productDisplayName = ProductTest.objects.filter(
     Q(productDisplayName__icontains="kid") | 
     Q(productDisplayName__icontains="kids") |
@@ -161,6 +170,14 @@ for product in target_productDisplayName:
     else:
         print(f"Image not found: {image_path}")
 
+for product in target_usage:
+    image_path = os.path.join(folder_path, product.imagePath)
+    if os.path.exists(image_path):
+        os.remove(image_path)
+        print(f"Deleted image: {image_path}")
+    else:
+        print(f"Image not found: {image_path}")
+
 for product in target_accessories:
     image_path = os.path.join(folder_path, product.imagePath)
     if os.path.exists(image_path):
@@ -204,6 +221,10 @@ for product in target_gender:
 for product in target_productDisplayName:
     product.delete()
     print(f"Deleted product with articleType: {product.productDisplayName}")
+
+for product in target_usage:
+    product.delete()
+    print(f"Deleted product with articleType: {product.usage}")
 
 for product in target_accessories:
     product.delete()
