@@ -222,7 +222,7 @@ function refreshFilteredProducts() {
                   <img src="${product.image_url}" class="card-img-top">
                   <div class="card-body">
                     <h5 class="card-title">${product.name}</h5>
-                    <button data-product="${product.id}" data-action="add" class="btn btn-primary update-cart">Add to Likes</button>
+                    <button data-product="${product.id}" data-action="add" class="btn btn-primary update-likes">Add to Likes</button>
                   </div>
                 </div>
               </div>
@@ -230,7 +230,7 @@ function refreshFilteredProducts() {
         } else {
           filteredProducts.innerHTML = '<p>No Clothing Found</p>';
         }
-        attachAddToCartEventListeners();
+        attachAddTolikesEventListeners();
       });
   }
 }
@@ -301,8 +301,8 @@ document.getElementById('more-products').addEventListener('click', refreshFilter
 refreshFilteredProducts();
 
 
-function attachAddToCartEventListeners() {
-  document.querySelectorAll('.update-cart').forEach(button => {
+function attachAddTolikesEventListeners() {
+  document.querySelectorAll('.update-likes').forEach(button => {
     button.addEventListener('click', function (event) {
       event.preventDefault(); // Add this line to prevent the form submission
       const productId = event.target.getAttribute('data-product');
@@ -339,7 +339,7 @@ function updateUserOrder(productId, action, source, event) {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-  attachAddToCartEventListeners();
+  attachAddTolikesEventListeners();
 });
 
 function clearPreferences() {

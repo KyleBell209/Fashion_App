@@ -13,7 +13,7 @@
 			<br>
 			<table class="table">
 				<tr>
-					<th><h5>Number of : <strong>{{order.get_cart_items}}</strong></h5></th>
+					<th><h5>Number of : <strong>{{order.get_likes_items}}</strong></h5></th>
 					<th>
 					</th>
 				</tr>
@@ -33,14 +33,14 @@
 		
 					<div style="flex:1"></div>
 					{% for item in items %}
-					<div class="cart-row">
+					<div class="likes-row">
 						<div style="flex:2"><img class="row-image" src="{{ MEDIA_URL }}{{ item.product.imageURL }}"></div>
 					</div>
 					{% endfor %}
 
 		</div>
         <div class="box-element">
-            <div class="cart-row">
+            <div class="likes-row">
                 <div style="flex:2"></div>
                 <div style="flex:2"><strong>Liked Products</strong></div>
             </div>
@@ -49,27 +49,27 @@
 				<h3>{{ filter_value }}</h3>
 				{% for item in items %}
 					{% with item_id=item.id|stringformat:"s" %}
-            <div class="cart-row">
+            <div class="likes-row">
 				<div style="flex:2"><img class="row-image" src="{{ item.product.imageURL }}"></div>
 					<div style="flex:2"><p>{{item.product.productDisplayName}}</p></div>
 					
 					<div style="flex:1">			
-							<img data-product="{{item.product.id}}" data-action="remove" class="bin-icon update-cart" src="{% static  'icons/bin.png' %}">
+							<img data-product="{{item.product.id}}" data-action="remove" class="bin-icon update-likes" src="{% static  'icons/bin.png' %}">
 					
 					</div>
 				</div>
 				{% if item_id in recommended_images %}
-				<div class="cart-row">
+				<div class="likes-row">
 					<div style="flex:2"></div>
 					<div style="flex:2"><strong>Recommended Items</strong></div>
 					<div style="flex:1"></div>
 				</div>
-				<div class="cart-row recommended-images">
+				<div class="likes-row recommended-images">
 					{% for rec_image in recommended_images|get_item:item_id %}
 					<div style="flex:1">
 						<img class="row-image" src="{{ rec_image.image_url }}" alt="">
 						<p><strong>{{ rec_image.get_related_product_name }}</strong></p>
-						<button data-product="{{ rec_image.image_url }}" data-action="add" data-source="cart" class="btn btn-outline-secondary add-btn update-cart">Add to Likes</button>
+						<button data-product="{{ rec_image.image_url }}" data-action="add" data-source="likes" class="btn btn-outline-secondary add-btn update-likes">Add to Likes</button>
 					</div>
 				{% endfor %}	
 				</div>
@@ -80,12 +80,12 @@
 				<div style="flex:2"><strong>Mean {{ filter_value }} Recommendations</strong></div>
 				<div style="flex:1"></div>
 				{% if filter_value in filter_mean_recommendations %}
-				<div class="cart-row">
+				<div class="likes-row">
 					{% for rec_image in filter_mean_recommendations|get_item:filter_value %}
 					<div style="flex:2">
 						<img class="row-image" src="{{ rec_image.image_url }}" alt="">
 						<p><strong>{{ rec_image.product_name }}</strong></p>
-						<button data-product="{{ rec_image.image_url }}" data-action="add" data-source="cart" class="btn btn-outline-secondary add-btn update-cart">Add to Likes</button>
+						<button data-product="{{ rec_image.image_url }}" data-action="add" data-source="likes" class="btn btn-outline-secondary add-btn update-likes">Add to Likes</button>
 					</div>
 					{% endfor %}
 				</div>

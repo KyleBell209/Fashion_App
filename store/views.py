@@ -8,7 +8,7 @@ from django.conf import settings
 import re
 import random
 from numpy.linalg import norm
-from .recommendations import get_image_recommendations, get_recommended_products, get_mean_cart_recommendations
+from .recommendations import get_image_recommendations, get_recommended_products, get_mean_likes_recommendations
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
@@ -21,7 +21,7 @@ def store(request):
     customer = request.user.customer
     order, created = Order.objects.get_or_create(customer=customer, complete=False)
     items = order.orderitem_set.all()
-    cartItems = order.get_cart_items
+    likesItems = order.get_likes_items
 
     product_list = ProductTest.objects.all()
     user_preferences = request.user.customer.preferences
@@ -45,7 +45,7 @@ def store(request):
         paginator = Paginator(recommended_products, remaining_products)
         page_obj = paginator.get_page(page_number)
 
-    context = {'page_obj': page_obj, 'cartItems': cartItems}
+    context = {'page_obj': page_obj, 'likesItems': likesItems}
     return render(request, 'store/store.html', context)
 
 @staff_member_required
@@ -125,11 +125,11 @@ def clear_preferences(request):
 
 
 @login_required(login_url='userlogin')
-def cart(request):
+def likes(request):
     customer = request.user.customer
     order, created = Order.objects.get_or_create(customer=customer, complete=False)
     items = order.orderitem_set.all()
-    cartItems = order.get_cart_items
+    likesItems = order.get_likes_items
     
     filter_type = request.GET.get('filter', 'masterCategory')
 
@@ -144,10 +144,10 @@ def cart(request):
 
     user_gender = customer.preferences.gender if customer.preferences and customer.preferences.gender else None
 
-    mean_cart_recommendations = get_mean_cart_recommendations(product_image_urls, gender=user_gender)
+    mean_likes_recommendations = get_mean_likes_recommendations(product_image_urls, gender=user_gender)
 
     filter_mean_recommendations = {
-        filter_value: get_mean_cart_recommendations([item.product.imageURL for item in filter_items], master_category=filter_value if filter_type == 'masterCategory' else None, gender=user_gender, articleType=filter_value if filter_type == 'articleType' else None, subCategory=filter_value if filter_type == 'subCategory' else None)
+        filter_value: get_mean_likes_recommendations([item.product.imageURL for item in filter_items], master_category=filter_value if filter_type == 'masterCategory' else None, gender=user_gender, articleType=filter_value if filter_type == 'articleType' else None, subCategory=filter_value if filter_type == 'subCategory' else None)
         for filter_value, filter_items in items_by_filter.items()
     }
 
@@ -155,11 +155,11 @@ def cart(request):
         'items_by_filter': items_by_filter,
         'filter_type': filter_type,
         'order': order,
-        'cartItems': cartItems,
+        'likesItems': likesItems,
         'recommended_images': recommended_images,
         'filter_mean_recommendations': filter_mean_recommendations,
     }
-    return render(request, 'store/cart.html', context)
+    return render(request, 'store/likes.html', context)
 
 
 def get_filtered_products(request):
@@ -193,7 +193,7 @@ def updateItem(request):
 
     customer = request.user.customer
 
-    if source == 'cart':
+    if source == 'likes':
         match = re.search(r'(?<=\/images\\).+?(?=.jpg)', product_info)
         if match:
             product_id = int(match.group())

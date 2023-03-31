@@ -114,7 +114,7 @@ def process_image_and_extract_features(image_source):
     preprocessed_img = process_image(image_source)
     return get_feature_vector(preprocessed_img)
 
-def get_mean_cart_recommendations(product_image_urls, master_category=None, gender=None, articleType=None, subCategory=None):
+def get_mean_likes_recommendations(product_image_urls, master_category=None, gender=None, articleType=None, subCategory=None):
     if len(product_image_urls) == 0:
         return []
 

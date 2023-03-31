@@ -6,7 +6,7 @@ from . import accounts
 urlpatterns = [
 	#Leave as empty string for base url
 	path('', views.store, name="store"),
-	path('cart/', views.cart, name="cart"),
+	path('likes/', views.likes, name="likes"),
 	path('update_item/', views.updateItem, name="update_item"),
     path('survey/', views.survey, name='survey'),    
 	path('login/', accounts.userlogin, name="userlogin"),
