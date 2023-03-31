@@ -13,7 +13,7 @@
 			<br>
 			<table class="table">
 				<tr>
-					<th><h5>Items: <strong>{{order.get_cart_items}}</strong></h5></th>
+					<th><h5>Number of : <strong>{{order.get_cart_items}}</strong></h5></th>
 					<th>
 					</th>
 				</tr>
@@ -30,7 +30,7 @@
             </form>
 			
 			<div style="flex:2"></div>
-					<div style="flex:2"><strong>Items In cart</strong></div>
+		
 					<div style="flex:1"></div>
 					{% for item in items %}
 					<div class="cart-row">
@@ -42,8 +42,7 @@
         <div class="box-element">
             <div class="cart-row">
                 <div style="flex:2"></div>
-                <div style="flex:2"><strong>Item</strong></div>
-                <div style="flex:1"><strong>Quantity</strong></div>
+                <div style="flex:2"><strong>Liked Products</strong></div>
             </div>
 			<div class="box-element">
 				{% for filter_value, items in items_by_filter.items %}
@@ -70,7 +69,7 @@
 					<div style="flex:1">
 						<img class="row-image" src="{{ rec_image.image_url }}" alt="">
 						<p><strong>{{ rec_image.get_related_product_name }}</strong></p>
-						<button data-product="{{ rec_image.image_url }}" data-action="add" data-source="cart" class="btn btn-outline-secondary add-btn update-cart">Add to Cart</button>
+						<button data-product="{{ rec_image.image_url }}" data-action="add" data-source="cart" class="btn btn-outline-secondary add-btn update-cart">Add to Likes</button>
 					</div>
 				{% endfor %}	
 				</div>
@@ -86,7 +85,7 @@
 					<div style="flex:2">
 						<img class="row-image" src="{{ rec_image.image_url }}" alt="">
 						<p><strong>{{ rec_image.product_name }}</strong></p>
-						<button data-product="{{ rec_image.image_url }}" data-action="add" data-source="cart" class="btn btn-outline-secondary add-btn update-cart">Add to Cart</button>
+						<button data-product="{{ rec_image.image_url }}" data-action="add" data-source="cart" class="btn btn-outline-secondary add-btn update-cart">Add to Likes</button>
 					</div>
 					{% endfor %}
 				</div>

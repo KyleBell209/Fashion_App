@@ -222,7 +222,7 @@ function refreshFilteredProducts() {
                   <img src="${product.image_url}" class="card-img-top">
                   <div class="card-body">
                     <h5 class="card-title">${product.name}</h5>
-                    <button data-product="${product.id}" data-action="add" class="btn btn-primary update-cart">Add to Cart</button>
+                    <button data-product="${product.id}" data-action="add" class="btn btn-primary update-cart">Add to Likes</button>
                   </div>
                 </div>
               </div>

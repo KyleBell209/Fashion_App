@@ -56,7 +56,7 @@
 					<h7><strong>{{product.masterCategory}}</strong></h7>
 					<h8><strong>{{product.subCategory}}</strong></h8>
 					<hr>
-					<button data-product="{{product.id}}" data-action="add" class="btn btn-outline-secondary add-btn update-cart">Add to Cart</button>
+					<button data-product="{{product.id}}" data-action="add" class="btn btn-outline-secondary add-btn update-cart">Add to Likes</button>
 
 					{% if request.user.is_superuser %}
 					<form method="post" action="{% url 'delete_product' product.id %}">

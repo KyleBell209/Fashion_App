@@ -5,7 +5,7 @@ from pathlib import Path
 from django.db.models import Q
 from django.db.models import Count
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ecommerce.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'fashion.settings')
 django.setup()
 
 # Import Django and models
