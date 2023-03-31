@@ -9,7 +9,7 @@ for (i = 0; i < updateBtns.length; i++) {
         console.log('USER:', user)
 
         if (user == 'AnonymousUser'){
-            console.log('User is not authenticated')
+            console.log('NOT LOGGED IN!')
         } else {
             updateUserOrder(productId, action, source) // Pass the source attribute
         }
@@ -17,7 +17,7 @@ for (i = 0; i < updateBtns.length; i++) {
 }
 
 function updateUserOrder(productId, action, source){
-    console.log('User is authenticated, sending data...')
+    console.log('SUCCESS!')
 
     var url = '/update_item/'
 
@@ -27,7 +27,7 @@ function updateUserOrder(productId, action, source){
             'Content-Type':'application/json',
             'X-CSRFToken':csrftoken,
         },
-        body:JSON.stringify({'productId':productId, 'action':action, 'source': source}) // Include the source attribute
+        body:JSON.stringify({'productId':productId, 'action':action, 'source': source})
     })
     .then((response) => {
         return response.json();
