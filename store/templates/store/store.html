@@ -6,40 +6,49 @@
 		<form method="GET" action="{% url 'store' %}">
 			<input type="text" name="q" placeholder="Search by product name" value="{{ request.GET.q }}">
 			<button type="submit" class="btn btn-primary">Search</button>
+			<div class="dropdown">
+				<button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					Master Category
+				</button>
+				<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+					<a class="dropdown-item" href="?master_category=Apparel">Apparel</a>
+					<a class="dropdown-item" href="?master_category=Accessories">Accessories</a>
+					<a class="dropdown-item" href="?master_category=Footwear">Footwear</a>
+				</div>
+			</div>
+			<div class="dropdown">
+				<button class="btn btn-secondary dropdown-toggle" type="button" id="subCategoryDropdownButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					Sub Category
+				</button>
+				<div class="dropdown-menu" aria-labelledby="subCategoryDropdownButton" id="subCategoryDropdown">
+					<a class="dropdown-item" href="?master_category=Topwear">Topwear</a>
+					<a class="dropdown-item" href="?master_category=Bottomwear">Bottomwear</a>
+					<a class="dropdown-item" href="?master_category=Dress">Dress</a>
+					<a class="dropdown-item" href="?master_category=Loungewear and Nightwear">Loungewear and Nightwear</a>
+					<a class="dropdown-item" href="?master_category=Apparel Set">Apparel Set</a>
+					<a class="dropdown-item" href="?master_category=Shoes">Shoes</a>
+					<a class="dropdown-item" href="?master_category=Flip Flops">Flip Flops</a>
+					<a class="dropdown-item" href="?master_category=Sandal">Sandal</a>
+					<a class="dropdown-item" href="?master_category=Watches">Watches</a>
+					<a class="dropdown-item" href="?master_category=Belts">Belts</a>
+					<a class="dropdown-item" href="?master_category=Bags">Bags</a>
+					<a class="dropdown-item" href="?master_category=Jewellery">Jewellery</a>
+					<a class="dropdown-item" href="?master_category=Eyewear">Eyewear</a>
+					<a class="dropdown-item" href="?master_category=Headwear">Headwear</a>
+					<a class="dropdown-item" href="?master_category=Ties">Ties</a>
+					<a class="dropdown-item" href="?master_category=Gloves">Gloves</a>
+					<a class="dropdown-item" href="?master_category=Cufflinks">Cufflinks</a>
+					<a class="dropdown-item" href="?master_category=Stoles">Stoles</a>
+					<a class="dropdown-item" href="?master_category=Scarves">Scarves</a>
+				</div>
+			</div>
 		</form>
 		<hr>
 	</div>
-	<!-- Dropdown menus -->
-	<div class="col-lg-12 d-flex">
-		<div class="dropdown mr-3">
-			<button class="btn btn-primary dropdown-toggle" type="button" id="masterCategoryDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-				Master Category
-			</button>
-			<div class="dropdown-menu" aria-labelledby="masterCategoryDropdown">
-				<a class="dropdown-item" href="#">Test</a>
-			</div>
-		</div>
-		<div class="dropdown mr-3">
-			<button class="btn btn-primary dropdown-toggle" type="button" id="subCategoryDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-				Sub Category
-			</button>
-			<div class="dropdown-menu" aria-labelledby="subCategoryDropdown">
-				<a class="dropdown-item" href="#">Test</a>
-			</div>
-		</div>
-		<div class="dropdown">
-			<button class="btn btn-primary dropdown-toggle" type="button" id="articleTypeDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-				Article Type
-			</button>
-			<div class="dropdown-menu" aria-labelledby="articleTypeDropdown">
-				<a class="dropdown-item" href="#">Test</a>
-			</div>
-		</div>
-	</div>
-	<!-- End of dropdown menus -->
 	<hr>
 	{% for product in page_obj %}
-		{% if not request.GET.q or request.GET.q|lower in product.productDisplayName|lower %}
+	{% if not request.GET.q or request.GET.q|lower in product.productDisplayName|lower %}
+		{% if not request.GET.master_category or request.GET.master_category == product.masterCategory %}
 			<div class="col-lg-4">
 				<img class="thumbnail" src="{{ MEDIA_URL }}{{ product.imageURL }}">
 				<div class="box-element product">
@@ -58,7 +67,8 @@
 				</div>
 			</div>
 		{% endif %}
-	{% endfor %}
+	{% endif %}
+{% endfor %}
 </div>
 
 <!-- Pagination links -->
@@ -83,6 +93,50 @@
 {% endblock content %}
 
 {% block extra_js %}
+
+<script>
+      // Get the subcategory dropdown menu and its options
+  const subCategoryDropdown = document.getElementById('subCategoryDropdown');
+  const subCategoryOptions = subCategoryDropdown.querySelectorAll('.dropdown-item');
+  
+  // Attach a click event listener to the master category dropdown menu items
+  const masterCategoryDropdown = document.getElementById('masterCategoryDropdownButton');
+  masterCategoryDropdown.addEventListener('click', function(event) {
+  // Get the selected value and update the subcategory options
+  const selectedValue = event.target.getAttribute('data-value');
+  switch (selectedValue) {
+  case 'Apparel':
+  subCategoryOptions.forEach(function(option) {
+  if (['Topwear', 'Bottomwear', 'Dress', 'Loungewear and Nightwear', 'Apparel Set'].includes(option.getAttribute('data-value'))) {
+  option.style.display = 'block';
+  } else {
+  option.style.display = 'none';
+  }
+  });
+  break;
+  case 'Accessories':
+  subCategoryOptions.forEach(function(option) {
+  if (['Watches', 'Belts', 'Bags', 'Jewellery', 'Eyewear', 'Headwear', 'Ties', 'Gloves', 'Sports Accessories', 'Cufflinks', 'Stoles', 'Scarves'].includes(option.getAttribute('data-value'))) {
+  option.style.display = 'block';
+  } else {
+  option.style.display = 'none';
+  }
+  });
+  break;
+  case 'Footwear':
+  subCategoryOptions.forEach(function(option) {
+  if (['Shoes', 'Flip Flops', 'Sandal'].includes(option.getAttribute('data-value'))) {
+  option.style.display = 'block';
+  } else {
+  option.style.display = 'none';
+  }
+  });
+  break;
+  }
+  });
+  </script>
+  </script>
+
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>

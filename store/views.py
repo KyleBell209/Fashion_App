@@ -15,7 +15,6 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib import messages
-from math import ceil
 
 @login_required(login_url='userlogin')
 def store(request):
@@ -38,7 +37,7 @@ def store(request):
         num_pages = total_num_products // num_products_per_page + 1
 
     paginator = Paginator(recommended_products, num_products_per_page)
-    page_number = request.GET.get('page', 1)
+    page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
     # If this is the last page, adjust the number of products per page to be equal to the remaining products
@@ -104,6 +103,26 @@ def survey(request):
 
     context = {'filtered_products': filtered_products, 'user_preferences': user_preferences}
     return render(request, 'store/survey.html', context)
+
+from django.http import JsonResponse
+
+@login_required(login_url='userlogin')
+def clear_preferences(request):
+    customer = request.user.customer
+    preferences, created = UserPreference.objects.get_or_create(customer=customer)
+    preferences.gender = ''
+    preferences.masterCategory = ''
+    preferences.subCategory = ''
+    preferences.articleType = ''
+    preferences.baseColour = ''
+    preferences.season = ''
+    preferences.year = ''
+    preferences.usage = ''
+    preferences.save()
+    customer.preferences = preferences
+    customer.save()
+    return JsonResponse({'success': True})
+
 
 @login_required(login_url='userlogin')
 def cart(request):
