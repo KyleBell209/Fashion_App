@@ -51,7 +51,7 @@ class ProductTest(models.Model):
 #comment out class Product below to use ProductTest above
 
 
-class Order(models.Model):
+class Likes(models.Model):
 	customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True, blank=True)
 	date_ordered = models.DateTimeField(auto_now_add=True)
 	complete = models.BooleanField(default=False)
@@ -62,13 +62,13 @@ class Order(models.Model):
 
 	@property
 	def get_likes_items(self):
-		orderitems = self.orderitem_set.all()
-		total = sum([item.quantity for item in orderitems])
+		likeitems = self.likeitem_set.all()
+		total = sum([item.quantity for item in likeitems])
 		return total 
 
-class OrderItem(models.Model):
+class LikeItem(models.Model):
     product = models.ForeignKey(ProductTest, on_delete=models.SET_NULL, null=True)
-    order = models.ForeignKey(Order, on_delete=models.SET_NULL, null=True)
+    likes = models.ForeignKey(Likes, on_delete=models.SET_NULL, null=True)
     quantity = models.IntegerField(default=0, null=True, blank=True)
     date_added = models.DateTimeField(auto_now_add=True)
     masterCategory = models.CharField(max_length=200, null=True)
@@ -78,7 +78,7 @@ class OrderItem(models.Model):
         if self.product:
             self.masterCategory = self.product.masterCategory
             self.name = self.product.productDisplayName
-        super(OrderItem, self).save(*args, **kwargs)
+        super(LikeItem, self).save(*args, **kwargs)
 
 
 class RecommendedImage(models.Model):

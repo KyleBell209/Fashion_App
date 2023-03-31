@@ -19,9 +19,9 @@ from django.contrib import messages
 @login_required(login_url='userlogin')
 def style(request):
     customer = request.user.customer
-    order, created = Order.objects.get_or_create(customer=customer, complete=False)
-    items = order.orderitem_set.all()
-    likesItems = order.get_likes_items
+    likes, created = Likes.objects.get_or_create(customer=customer, complete=False)
+    items = likes.likeitem_set.all()
+    likesItems = likes.get_likes_items
 
     product_list = ProductTest.objects.all()
     user_preferences = request.user.customer.preferences
@@ -92,8 +92,8 @@ def survey(request):
         customer.preferences = preferences
         customer.save()
 
-        # Update order after saving preferences
-        order, _ = Order.objects.get_or_create(customer=customer, complete=False)        
+        # Update likes after saving preferences
+        likes, _ = Likes.objects.get_or_create(customer=customer, complete=False)        
 
         return redirect('style')
 
@@ -127,9 +127,9 @@ def clear_preferences(request):
 @login_required(login_url='userlogin')
 def likes(request):
     customer = request.user.customer
-    order, created = Order.objects.get_or_create(customer=customer, complete=False)
-    items = order.orderitem_set.all()
-    likesItems = order.get_likes_items
+    likes, created = Likes.objects.get_or_create(customer=customer, complete=False)
+    items = likes.likeitem_set.all()
+    likesItems = likes.get_likes_items
     
     filter_type = request.GET.get('filter', 'masterCategory')
 
@@ -154,7 +154,7 @@ def likes(request):
     context = {
         'items_by_filter': items_by_filter,
         'filter_type': filter_type,
-        'order': order,
+        'likes': likes,
         'likesItems': likesItems,
         'recommended_images': recommended_images,
         'filter_mean_recommendations': filter_mean_recommendations,
@@ -204,8 +204,8 @@ def updateItem(request):
 
     product = ProductTest.objects.get(id=product_id)
 
-    order, created = Order.objects.get_or_create(customer=customer, complete=False)
-    orderItem, created = OrderItem.objects.get_or_create(order=order, product=product)
+    likes, created = Likes.objects.get_or_create(customer=customer, complete=False)
+    orderItem, created = LikeItem.objects.get_or_create(likes=likes, product=product)
 
     if action == 'add':
         orderItem.quantity += 1
