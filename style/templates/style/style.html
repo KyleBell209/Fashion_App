@@ -1,0 +1,144 @@
+{% extends 'style/main.html' %}
+{% load static %}
+{% block content %}
+<div class="row">
+	<div class="col-lg-12">
+		<form method="GET" action="{% url 'style' %}">
+			<input type="text" name="q" placeholder="Search by product name" value="{{ request.GET.q }}">
+			<button type="submit" class="btn btn-primary">Search</button>
+			<div class="dropdown">
+				<button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					Master Category
+				</button>
+				<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+					<a class="dropdown-item" href="?master_category=Apparel">Apparel</a>
+					<a class="dropdown-item" href="?master_category=Accessories">Accessories</a>
+					<a class="dropdown-item" href="?master_category=Footwear">Footwear</a>
+				</div>
+			</div>
+			<div class="dropdown">
+				<button class="btn btn-secondary dropdown-toggle" type="button" id="subCategoryDropdownButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					Sub Category
+				</button>
+				<div class="dropdown-menu" aria-labelledby="subCategoryDropdownButton" id="subCategoryDropdown">
+					<a class="dropdown-item" href="?master_category=Topwear">Topwear</a>
+					<a class="dropdown-item" href="?master_category=Bottomwear">Bottomwear</a>
+					<a class="dropdown-item" href="?master_category=Dress">Dress</a>
+					<a class="dropdown-item" href="?master_category=Loungewear and Nightwear">Loungewear and Nightwear</a>
+					<a class="dropdown-item" href="?master_category=Apparel Set">Apparel Set</a>
+					<a class="dropdown-item" href="?master_category=Shoes">Shoes</a>
+					<a class="dropdown-item" href="?master_category=Flip Flops">Flip Flops</a>
+					<a class="dropdown-item" href="?master_category=Sandal">Sandal</a>
+					<a class="dropdown-item" href="?master_category=Watches">Watches</a>
+					<a class="dropdown-item" href="?master_category=Belts">Belts</a>
+					<a class="dropdown-item" href="?master_category=Bags">Bags</a>
+					<a class="dropdown-item" href="?master_category=Jewellery">Jewellery</a>
+					<a class="dropdown-item" href="?master_category=Eyewear">Eyewear</a>
+					<a class="dropdown-item" href="?master_category=Headwear">Headwear</a>
+					<a class="dropdown-item" href="?master_category=Ties">Ties</a>
+					<a class="dropdown-item" href="?master_category=Gloves">Gloves</a>
+					<a class="dropdown-item" href="?master_category=Cufflinks">Cufflinks</a>
+					<a class="dropdown-item" href="?master_category=Stoles">Stoles</a>
+					<a class="dropdown-item" href="?master_category=Scarves">Scarves</a>
+				</div>
+			</div>
+		</form>
+		<hr>
+	</div>
+	<hr>
+	{% for product in page_obj %}
+	{% if not request.GET.q or request.GET.q|lower in product.productDisplayName|lower %}
+		{% if not request.GET.master_category or request.GET.master_category == product.masterCategory %}
+			<div class="col-lg-4">
+				<img class="thumbnail" src="{{ MEDIA_URL }}{{ product.imageURL }}">
+				<div class="box-element product">
+					<h6><strong>{{product.productDisplayName}}</strong></h6>
+					<h7><strong>{{product.masterCategory}}</strong></h7>
+					<h8><strong>{{product.subCategory}}</strong></h8>
+					<hr>
+					<button data-product="{{product.id}}" data-action="add" class="btn btn-outline-secondary add-btn update-likes">Add to Likes</button>
+
+					{% if request.user.is_superuser %}
+					<form method="post" action="{% url 'delete_product' product.id %}">
+						{% csrf_token %}
+						<button type="submit" class="btn btn-danger">DELETE</button>
+					</form>
+					{% endif %}
+				</div>
+			</div>
+		{% endif %}
+	{% endif %}
+{% endfor %}
+</div>
+
+<!-- Pagination links -->
+<div class="pagination">
+	<span class="step-links">
+		{% if page_obj.has_previous %}
+			<a href="?page=1{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">&laquo; first</a>
+			<a href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">previous</a>
+		{% endif %}
+
+		<span class="current-page">
+			Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+		</span>
+
+		{% if page_obj.has_next %}
+			<a href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">next</a>
+			<a href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">last &raquo;</a>
+		{% endif %}
+	</span>
+</div>
+
+{% endblock content %}
+
+{% block extra_js %}
+
+<script>
+      // Get the subcategory dropdown menu and its options
+  const subCategoryDropdown = document.getElementById('subCategoryDropdown');
+  const subCategoryOptions = subCategoryDropdown.querySelectorAll('.dropdown-item');
+  
+  // Attach a click event listener to the master category dropdown menu items
+  const masterCategoryDropdown = document.getElementById('masterCategoryDropdownButton');
+  masterCategoryDropdown.addEventListener('click', function(event) {
+  // Get the selected value and update the subcategory options
+  const selectedValue = event.target.getAttribute('data-value');
+  switch (selectedValue) {
+  case 'Apparel':
+  subCategoryOptions.forEach(function(option) {
+  if (['Topwear', 'Bottomwear', 'Dress', 'Loungewear and Nightwear', 'Apparel Set'].includes(option.getAttribute('data-value'))) {
+  option.style.display = 'block';
+  } else {
+  option.style.display = 'none';
+  }
+  });
+  break;
+  case 'Accessories':
+  subCategoryOptions.forEach(function(option) {
+  if (['Watches', 'Belts', 'Bags', 'Jewellery', 'Eyewear', 'Headwear', 'Ties', 'Gloves', 'Sports Accessories', 'Cufflinks', 'Stoles', 'Scarves'].includes(option.getAttribute('data-value'))) {
+  option.style.display = 'block';
+  } else {
+  option.style.display = 'none';
+  }
+  });
+  break;
+  case 'Footwear':
+  subCategoryOptions.forEach(function(option) {
+  if (['Shoes', 'Flip Flops', 'Sandal'].includes(option.getAttribute('data-value'))) {
+  option.style.display = 'block';
+  } else {
+  option.style.display = 'none';
+  }
+  });
+  break;
+  }
+  });
+  </script>
+  </script>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="{% static 'js/survey.js' %}"></script>
+{% endblock %}

@@ -10,7 +10,7 @@ django.setup()
 
 # Import Django and models
 import django
-from store.models import ProductTest
+from style.models import ProductTest
 
 django.setup()
 

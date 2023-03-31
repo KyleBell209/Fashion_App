@@ -1,0 +1,98 @@
+{% extends 'style/main.html' %}
+{% load static %}
+{% block content %}
+  <div class="container">
+    <h1>Product Recommendation Survey</h1>
+    <form id="preferences-form" method="POST">
+      {% csrf_token %}
+      <button id="clear-preferences-btn" class="btn btn-warning mt-3">Clear preferences</button>
+      <div class="form-group">
+        <label for="gender">Gender</label>
+        <select class="form-control" name="gender" id="gender">
+          <option value="">Select</option>
+          <option value="Men" {% if user_preferences.gender == "Men" %}selected{% endif %}>Men</option>
+          <option value="Women" {% if user_preferences.gender == "Women" %}selected{% endif %}>Women</option>
+          <option value="Unisex" {% if user_preferences.gender == "Unisex" %}selected{% endif %}>Unisex</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="baseColour">Base Colour</label>
+        <input type="text" class="form-control" name="baseColour" id="baseColour" placeholder="Enter your preferred base colour" value="{{ user_preferences.baseColour }}">
+      </div>
+      <div class="form-group">
+        <label for="season">Season</label>
+        <select class="form-control" name="season" id="season">
+          <option value="">Select</option>
+          <option value="Spring" {% if user_preferences.season == "Spring" %}selected{% endif %}>Spring</option>
+          <option value="Summer" {% if user_preferences.season == "Summer" %}selected{% endif %}>Summer</option>
+          <option value="Fall" {% if user_preferences.season == "Fall" %}selected{% endif %}>Fall</option>
+          <option value="Winter" {% if user_preferences.season == "Winter" %}selected{% endif %}>Winter</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="masterCategory">Master Category</label>
+        <select class="form-control" name="masterCategory" id="masterCategory">
+          <option value="">Select</option>
+          <option value="Apparel" {% if user_preferences.masterCategory == "Apparel" %}selected{% endif %}>Apparel</option>
+          <option value="Accessories" {% if user_preferences.masterCategory == "Accessories" %}selected{% endif %}>Accessories</option>
+          <option value="Footwear" {% if user_preferences.masterCategory == "Footwear" %}selected{% endif %}>Footwear</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="subCategory">Sub Category</label>
+        <select class="form-control" name="subCategory" id="subCategory">
+          <option value="">Select</option>
+        </select>
+          </div>
+          <div class="form-group">
+            <label for="articleType">Article Type</label>
+            <select class="form-control" name="articleType" id="articleType">
+              <option value="">Select</option>
+            </select>
+          </div>
+            <div class="form-group">
+              <label for="usage">Usage</label>
+              <select class="form-control" name="usage" id="usage">
+              <option value="">Select</option>
+              <option value="Casual" {% if user_preferences.usage == "Casual" %}selected{% endif %}>Casual</option>
+              <option value="Formal" {% if user_preferences.usage == "Formal" %}selected{% endif %}>Formal</option>
+              <option value="Sports" {% if user_preferences.usage == "Sports" %}selected{% endif %}>Sports</option>
+              <option value="Smart Casual" {% if user_preferences.usage == "Smart Casual" %}selected{% endif %}>Smart Casual</option>
+              <option value="Travel" {% if user_preferences.usage == "Travel" %}selected{% endif %}>Travel</option>
+              <option value="Party" {% if user_preferences.usage == "Party" %}selected{% endif %}>Party</option>
+              </select>
+          </div>
+      </div>
+    </form>
+    <button id="more-products" class="btn btn-secondary mt-3">More products?</button>
+    <div id="filtered-products" class="row">
+      {% if filtered_products %}
+        {% for product in filtered_products %}
+          <div class="col-6 col-md-4 col-lg-3">
+            <div class="card mb-4">
+              <img src="{{ product.imageURL }}" class="card-img-top">
+              <div class="card-body">
+                <h5 class="card-title">{{ product.name }}</h5>
+                <button data-product="{{ product.id }}" data-action="add" class="btn btn-outline-secondary add-btn update-likes">Add to Likes</button>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <p>No Clothing Found</p>
+      {% endif %}
+    </div>
+  </div>
+
+    
+  </div>
+  
+  <script>
+    const user_preferences = {
+      masterCategory: "{{ user_preferences.masterCategory }}",
+      subCategory: "{{ user_preferences.subCategory }}",
+      articleType: "{{ user_preferences.articleType }}"
+    };
+  </script>
+  <script type="text/javascript" src="{% static 'js/survey.js' %}"></script>
+{% endblock %}
