@@ -222,14 +222,15 @@ function refreshFilteredProducts() {
                   <img src="${product.image_url}" class="card-img-top">
                   <div class="card-body">
                     <h5 class="card-title">${product.name}</h5>
-                    <button data-product="${product.id}" data-action="add" class="btn btn-primary update-likes">Add to Likes</button>
+                    <button data-product="${product.id}" data-action="add" class="btn btn-outline-secondary add-btn update-likes">Add to Likes</button>
+                    <button data-product="${product.id}" data-action="superlike" class="btn btn-outline-primary superlike-btn update-likes">Superlike</button>
                   </div>
                 </div>
               </div>
             `).join('');
         } else {
           filteredProducts.innerHTML = '<p>No Clothing Found</p>';
-        }
+        }        
         attachAddTolikesEventListeners();
       });
   }
@@ -302,9 +303,9 @@ refreshFilteredProducts();
 
 
 function attachAddTolikesEventListeners() {
-  document.querySelectorAll('.update-likes').forEach(button => {
+  document.querySelectorAll('.add-btn, .superlike-btn').forEach(button => {
     button.addEventListener('click', function (event) {
-      event.preventDefault(); // Add this line to prevent the form submission
+      event.preventDefault(); 
       const productId = event.target.getAttribute('data-product');
       const action = event.target.getAttribute('data-action');
       const source = event.target.getAttribute('data-source') || '';
@@ -334,8 +335,34 @@ function updateUserOrder(productId, action, source, event) {
       return response.json();
     })
     .then((data) => {
-      console.log('data:', data);
-    });
+      let superliked = false;
+      if (action === "superlike" && data.superliked) {
+          superliked = true;
+      }
+  
+      const response_data = {
+          message: superliked ? `Superliked ${productId}` : "Item was added",
+          productId: productId,
+          superliked: superliked,
+      };
+  
+      if (action === "superlike") {
+          const superlikeBtn = document.querySelector(
+              `button[data-product="${productId}"][data-action="superlike"]`
+          );
+  
+          if (data.superliked) {
+              alert(data.message);
+              superlikeBtn.classList.remove("btn-outline-primary");
+              superlikeBtn.classList.add("superlike-active");
+          } else {
+              superlikeBtn.classList.remove("superlike-active");
+              superlikeBtn.classList.add("btn-outline-primary");
+          }
+      } else {
+          location.reload();
+      }
+  });
 }
 
 document.addEventListener('DOMContentLoaded', function () {
