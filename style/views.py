@@ -126,7 +126,6 @@ def clear_preferences(request):
 
 @login_required(login_url='userlogin')
 def likes(request):
-    
     customer = request.user.customer
     likes, created = Likes.objects.get_or_create(customer=customer, complete=False)
     items = likes.likeitem_set.all()
@@ -145,10 +144,10 @@ def likes(request):
 
     user_gender = customer.preferences.gender if customer.preferences and customer.preferences.gender else None
 
-    mean_likes_recommendations = get_mean_likes_recommendations(product_image_urls, customer, gender=user_gender)
+    mean_likes_recommendations = get_mean_likes_recommendations(product_image_urls, gender=user_gender)
 
     filter_mean_recommendations = {
-        filter_value: get_mean_likes_recommendations([item.product.imageURL for item in filter_items], customer, master_category=filter_value if filter_type == 'masterCategory' else None, gender=user_gender, articleType=filter_value if filter_type == 'articleType' else None, subCategory=filter_value if filter_type == 'subCategory' else None)
+        filter_value: get_mean_likes_recommendations([item.product.imageURL for item in filter_items], master_category=filter_value if filter_type == 'masterCategory' else None, gender=user_gender, articleType=filter_value if filter_type == 'articleType' else None, subCategory=filter_value if filter_type == 'subCategory' else None)
         for filter_value, filter_items in items_by_filter.items()
     }
 

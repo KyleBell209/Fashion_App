@@ -64,18 +64,11 @@ def get_related_product_masterCategory(image_url):
     else:
         return None
 
-def get_liked_product_ids(customer):
-    likes, _ = Likes.objects.get_or_create(customer=customer, complete=False)
-    like_items = likes.likeitem_set.all()
-    like_item_product_ids = [item.product.id for item in like_items]
-    return like_item_product_ids
-
 def get_image_recommendations(product_id):
     existing_recommendations = RecommendedImage.objects.filter(product_id=product_id)
 
     if existing_recommendations.exists():
         return existing_recommendations
-
 
     product = ProductTest.objects.get(id=product_id)
     master_category = product.masterCategory
@@ -109,7 +102,8 @@ def get_image_recommendations(product_id):
             ) for file in indices[0][1:6]
         ]
 
-    recommended_images = [rec_image for rec_image in recommended_images if (not product_gender or rec_image.product.gender == product_gender)]
+    # Filter images based on product_gender
+    recommended_images = [rec_image for rec_image in recommended_images if not product_gender or rec_image.product.gender == product_gender]
 
     RecommendedImage.objects.bulk_create(recommended_images)
 
@@ -120,11 +114,9 @@ def process_image_and_extract_features(image_source):
     preprocessed_img = process_image(image_source)
     return get_feature_vector(preprocessed_img)
 
-def get_mean_likes_recommendations(product_image_urls, customer, master_category=None, gender=None, articleType=None, subCategory=None):
+def get_mean_likes_recommendations(product_image_urls, master_category=None, gender=None, articleType=None, subCategory=None):
     if len(product_image_urls) == 0:
         return []
-
-    like_item_product_ids = get_liked_product_ids(customer)
 
     with ThreadPoolExecutor() as executor:
         feature_vectors = list(executor.map(process_image_and_extract_features, product_image_urls))
@@ -145,12 +137,10 @@ def get_mean_likes_recommendations(product_image_urls, customer, master_category
             return "Product not found"
 
     recommended_images = [{'image_url': f'https://storage.googleapis.com/django-bucket-kb/{filenames[file]}',
-                        'product_name': get_product_name_from_url(f'https://storage.googleapis.com/django-bucket-kb/{filenames[file]}'),
-                        'master_category': get_related_product_masterCategory(f'https://storage.googleapis.com/django-bucket-kb/{filenames[file]}'),
-                        'product_id': int(re.search(r'(?<=/images\\).+?(?=.jpg)', f'https://storage.googleapis.com/django-bucket-kb/{filenames[file]}').group())}
-                        for file in indices[0][1:]]
+                           'product_name': get_product_name_from_url(f'https://storage.googleapis.com/django-bucket-kb/{filenames[file]}'),
+                           'master_category': get_related_product_masterCategory(f'https://storage.googleapis.com/django-bucket-kb/{filenames[file]}')}
+                          for file in indices[0][1:]]
 
-    
     if master_category is not None:
             recommended_images = [rec_image for rec_image in recommended_images if rec_image['master_category'] == master_category]
 
@@ -162,8 +152,6 @@ def get_mean_likes_recommendations(product_image_urls, customer, master_category
 
     if subCategory is not None:
             recommended_images = [rec_image for rec_image in recommended_images if ProductTest.objects.get(id=int(re.search(r'(?<=/images\\).+?(?=.jpg)', rec_image['image_url']).group())).subCategory == subCategory]
-
-    recommended_images = [rec_image for rec_image in recommended_images if rec_image['product_id'] not in like_item_product_ids]
 
     return recommended_images
 
