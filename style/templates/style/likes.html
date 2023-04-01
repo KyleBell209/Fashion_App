@@ -13,7 +13,6 @@
 			<br>
 			<table class="table">
 				<tr>
-					<th><h5>Number of Likes: <strong>{{likes.get_likes_items}}</strong></h5></th>
 					<th>
 						<form action="{% url 'remove_all_likes' %}" method="post">
 							{% csrf_token %}

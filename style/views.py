@@ -22,7 +22,7 @@ def style(request):
     likes, created = Likes.objects.get_or_create(customer=customer, complete=False)
     items = likes.likeitem_set.all()
     likesItems = likes.get_likes_items
-
+    items_superliked_status = {item.product_id: item.superliked for item in items}
     product_list = ProductTest.objects.all()
     user_preferences = request.user.customer.preferences
     recommended_products = get_recommended_products(product_list, user_preferences)
@@ -45,7 +45,7 @@ def style(request):
         paginator = Paginator(recommended_products, remaining_products)
         page_obj = paginator.get_page(page_number)
 
-    context = {'page_obj': page_obj, 'likesItems': likesItems}
+    context = {'page_obj': page_obj, 'likesItems': likesItems, 'items_superliked_status': items_superliked_status}
     return render(request, 'style/style.html', context)
 
 
@@ -227,14 +227,15 @@ def updateItem(request):
         orderItem.save()
     elif action == 'superlike':
         orderItem.quantity += 1
-        orderItem.superliked = True
+        orderItem.superliked = not orderItem.superliked  
         orderItem.save()
     elif action == 'remove':
         orderItem.delete()
 
     response_data = {
-        'message': f'Superliked {product_id}' if action == 'superlike' else 'Item was added',
+        'message': f'Superliked {product_id}' if action == 'superlike' and orderItem.superliked else 'Item was added',
         'productId': product_id,
+        'superliked': orderItem.superliked  
     }
 
     return JsonResponse(response_data, safe=False)

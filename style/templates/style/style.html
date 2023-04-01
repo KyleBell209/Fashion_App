@@ -1,4 +1,5 @@
 {% extends 'style/main.html' %}
+{% load superlike_tag  %}
 {% load static %}
 {% block content %}
 <div class="row">
@@ -47,29 +48,30 @@
 	</div>
 	<hr>
 	{% for product in page_obj %}
-	{% if not request.GET.q or request.GET.q|lower in product.productDisplayName|lower %}
-		{% if not request.GET.master_category or request.GET.master_category == product.masterCategory %}
-			<div class="col-lg-4">
-				<img class="thumbnail" src="{{ MEDIA_URL }}{{ product.imageURL }}">
-				<div class="box-element product">
-					<h6><strong>{{product.productDisplayName}}</strong></h6>
-					<h7><strong>{{product.masterCategory}}</strong></h7>
-					<h8><strong>{{product.subCategory}}</strong></h8>
-					<hr>
-					<button data-product="{{product.id}}" data-action="add" class="btn btn-outline-secondary add-btn update-likes">Add to Likes</button>
-					<button data-product="{{product.id}}" data-action="superlike" class="btn btn-outline-primary superlike-btn update-likes">Superlike</button>
-					
-					{% if request.user.is_superuser %}
-					<form method="post" action="{% url 'delete_product' product.id %}">
-						{% csrf_token %}
-						<button type="submit" class="btn btn-danger">DELETE</button>
-					</form>
-					{% endif %}
-				</div>
-			</div>
-		{% endif %}
-	{% endif %}
+    {% if not request.GET.q or request.GET.q|lower in product.productDisplayName|lower %}
+        {% if not request.GET.master_category or request.GET.master_category == product.masterCategory %}
+            <div class="col-lg-4">
+                <img class="thumbnail" src="{{ MEDIA_URL }}{{ product.imageURL }}">
+                <div class="box-element product">
+                    <h6><strong>{{product.productDisplayName}}</strong></h6>
+                    <h7><strong>{{product.masterCategory}}</strong></h7>
+                    <h8><strong>{{product.subCategory}}</strong></h8>
+                    <hr>
+                    <button data-product="{{product.id}}" data-action="add" class="btn btn-outline-secondary add-btn update-likes">Add to Likes</button>
+                    <button data-product="{{product.id}}" data-action="superlike" class="btn btn-outline-primary superlike-btn update-likes{% if items_superliked_status|default:False and items_superliked_status|get_item:product.id|default:False %} superlike-active{% endif %}">Superlike</button>
+                    
+                    {% if request.user.is_superuser %}
+                    <form method="post" action="{% url 'delete_product' product.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">DELETE</button>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+    {% endif %}
 {% endfor %}
+
 </div>
 
 <!-- Pagination links -->
