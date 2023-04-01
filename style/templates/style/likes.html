@@ -66,7 +66,7 @@
 				{% if item_id in recommended_images %}
 				<div class="likes-row">
 					<div style="flex:2"></div>
-					<div style="flex:2"><strong>Recommended Items</strong></div>
+					<div style="flex:2"><strong>Similar Items</strong></div>
 					<div style="flex:1"></div>
 				</div>
 				<div class="likes-row recommended-images">
@@ -82,7 +82,7 @@
 				{% endwith %}
 				{% endfor %}
 				<div style="flex:2"></div>
-				<div style="flex:2"><strong>Mean {{ filter_value }} Recommendations</strong></div>
+				<div style="flex:2"><strong>Items you may like based on your {{ filter_value }} likes</strong></div>
 				<div style="flex:1"></div>
 				{% if filter_value in filter_mean_recommendations %}
 				<div class="row">
