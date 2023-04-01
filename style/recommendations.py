@@ -114,14 +114,20 @@ def process_image_and_extract_features(image_source):
     preprocessed_img = process_image(image_source)
     return get_feature_vector(preprocessed_img)
 
-def get_mean_likes_recommendations(product_image_urls, master_category=None, gender=None, articleType=None, subCategory=None):
+def get_mean_likes_recommendations(product_image_urls, weights=None, master_category=None, gender=None, articleType=None, subCategory=None):
     if len(product_image_urls) == 0:
         return []
+
+    if weights is None:
+        weights = [1] * len(product_image_urls)
+    elif len(weights) != len(product_image_urls):
+        raise ValueError("Length of weights must match the length of product_image_urls")
 
     with ThreadPoolExecutor() as executor:
         feature_vectors = list(executor.map(process_image_and_extract_features, product_image_urls))
 
-    mean_feature_vector = np.mean(feature_vectors, axis=0)
+    # Calculate the weighted mean of feature vectors
+    mean_feature_vector = np.average(feature_vectors, axis=0, weights=weights)
     mean_feature_vector = np.nan_to_num(mean_feature_vector)
     mean_feature_vector = mean_feature_vector.reshape(1, -1)
 

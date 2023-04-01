@@ -48,6 +48,7 @@ def style(request):
     context = {'page_obj': page_obj, 'likesItems': likesItems}
     return render(request, 'style/style.html', context)
 
+
 @staff_member_required
 def delete_product(request, product_id):
     product = ProductTest.objects.get(id=product_id)
@@ -144,10 +145,17 @@ def likes(request):
 
     user_gender = customer.preferences.gender if customer.preferences and customer.preferences.gender else None
 
-    mean_likes_recommendations = get_mean_likes_recommendations(product_image_urls, gender=user_gender)
+    product_image_weights = [1.5 if item.superliked else 1 for item in items]
+
+    mean_likes_recommendations = get_mean_likes_recommendations(product_image_urls, weights=product_image_weights, gender=user_gender)
 
     filter_mean_recommendations = {
-        filter_value: get_mean_likes_recommendations([item.product.imageURL for item in filter_items], master_category=filter_value if filter_type == 'masterCategory' else None, gender=user_gender, articleType=filter_value if filter_type == 'articleType' else None, subCategory=filter_value if filter_type == 'subCategory' else None)
+        filter_value: get_mean_likes_recommendations([item.product.imageURL for item in filter_items],
+                                                     weights=[1.5 if item.superliked else 1 for item in filter_items],
+                                                     master_category=filter_value if filter_type == 'masterCategory' else None,
+                                                     gender=user_gender,
+                                                     articleType=filter_value if filter_type == 'articleType' else None,
+                                                     subCategory=filter_value if filter_type == 'subCategory' else None)
         for filter_value, filter_items in items_by_filter.items()
     }
 
@@ -217,7 +225,16 @@ def updateItem(request):
     if action == 'add':
         orderItem.quantity += 1
         orderItem.save()
+    elif action == 'superlike':
+        orderItem.quantity += 1
+        orderItem.superliked = True
+        orderItem.save()
     elif action == 'remove':
         orderItem.delete()
 
-    return JsonResponse('Item was added', safe=False)
+    response_data = {
+        'message': f'Superliked {product_id}' if action == 'superlike' else 'Item was added',
+        'productId': product_id,
+    }
+
+    return JsonResponse(response_data, safe=False)

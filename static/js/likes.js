@@ -33,7 +33,11 @@ function updateUserOrder(productId, action, source){
         return response.json();
     })
     .then((data) => {
-        location.reload()
+        if (data.action === 'superlike') {
+            alert(data.message);
+        } else {
+            location.reload();
+        }
     });
 }
 

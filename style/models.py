@@ -73,7 +73,8 @@ class LikeItem(models.Model):
     date_added = models.DateTimeField(auto_now_add=True)
     masterCategory = models.CharField(max_length=200, null=True)
     name = models.CharField(max_length=200, null=True)
-
+    superliked = models.BooleanField(default=False)
+    
     def save(self, *args, **kwargs):
         if self.product:
             self.masterCategory = self.product.masterCategory
