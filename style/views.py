@@ -161,6 +161,13 @@ def likes(request):
     }
     return render(request, 'style/likes.html', context)
 
+@login_required(login_url='userlogin')
+def remove_all_likes(request):
+    customer = request.user.customer
+    likes, created = Likes.objects.get_or_create(customer=customer, complete=False)
+    items = likes.likeitem_set.all()
+    items.delete()
+    return redirect('likes')
 
 def get_filtered_products(request):
     if request.method == 'POST':

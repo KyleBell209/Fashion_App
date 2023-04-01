@@ -13,8 +13,13 @@
 			<br>
 			<table class="table">
 				<tr>
-					<th><h5>Number of : <strong>{{likes.get_likes_items}}</strong></h5></th>
+					<th><h5>Number of Likes: <strong>{{likes.get_likes_items}}</strong></h5></th>
 					<th>
+						<form action="{% url 'remove_all_likes' %}" method="post">
+							{% csrf_token %}
+							<button type="submit" class="btn btn-danger">Remove All Likes</button>
+						</form>
+					</th>
 					</th>
 				</tr>
 			</table>
@@ -22,7 +27,7 @@
 			<form method="get" class="form-inline">
                 <label for="filter">Filter by: </label>
                 <select name="filter" id="filter" class="form-control ml-2">
-                    <option value="masterCategory" {% if filter_type == "masterCategory" %}selected{% endif %}>Master Category</option>
+                    <option value="masterCategory" {% if filter_type == "masterCategory" %}selected{% endif %}>Main Category</option>
                     <option value="subCategory" {% if filter_type == "subCategory" %}selected{% endif %}>Sub Category</option>
                     <option value="articleType" {% if filter_type == "articleType" %}selected{% endif %}>Article Type</option>
                 </select>
@@ -80,9 +85,9 @@
 				<div style="flex:2"><strong>Mean {{ filter_value }} Recommendations</strong></div>
 				<div style="flex:1"></div>
 				{% if filter_value in filter_mean_recommendations %}
-				<div class="likes-row">
+				<div class="row">
 					{% for rec_image in filter_mean_recommendations|get_item:filter_value %}
-					<div style="flex:2">
+					<div class="col-md-2 col-sm-4">
 						<img class="row-image" src="{{ rec_image.image_url }}" alt="">
 						<p><strong>{{ rec_image.product_name }}</strong></p>
 						<button data-product="{{ rec_image.image_url }}" data-action="add" data-source="likes" class="btn btn-outline-secondary add-btn update-likes">Add to Likes</button>

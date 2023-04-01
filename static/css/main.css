@@ -1,126 +1,132 @@
 .navbar-custom {
-    background-color: #ffffff;
+    color: #000; 
+	border-bottom: 1px solid #ccc; 
+}
+
+.bg-custom {
+    background-color: #f8f8f8; 
 }
 
 .navbar-header {
-	font-size: 20px;
-	padding-left: 10px;
-	font-weight: bold;
-	font: Helvetica, sans-serif;
+    font-size: 20px;
+    padding-left: 10px;
+    font-weight: bold;
+    font-family: 'Montserrat', sans-serif;
     text-transform: uppercase;
 }
 
+.navbar-brand-custom {
+    font-size: 20px;
+    font-weight: bold;
+    font-family: 'Montserrat', sans-serif;
+    text-transform: uppercase;
+}
+.centered-title {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
 .user-profile {
-	color: #fff;
-	margin-right: 15px;
+    color: #000; /* Black text color */
+    margin-right: 15px;
 }
 
 /* Dropdown Menu */
 .dropdown {
-	display: inline-block;
-	position: relative;
-  }
+    display: inline-block;
+    position: relative;
+}
   
-  .dropdown-content {
-	display: none;
-	position: absolute;
-	right: 0;
-	background-color: #f9f9f9;
-	min-width: 160px;
-	box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-	z-index: 1;
-  }
+.dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    background-color: #f1f1f1;
+    color: #000; /* Black text color */
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+}
   
-  .dropdown-content a {
-	color: black;
-	padding: 12px 16px;
-	text-decoration: none;
-	display: block;
-  }
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
   
-  .dropdown-content a:hover {
-	background-color: #f1f1f1;
-  }
+.dropdown-content a:hover {
+    background-color: #f1f1f1;
+}
   
-  .dropdown:hover .dropdown-content {
-	display: block;
-  }
+.dropdown:hover .dropdown-content {
+    display: block;
+}
 
 body{
-	background-color: hsl(0, 0%, 98%);
+    background-color: hsl(0, 0%, 98%);
 }
 
 h1,h2,h3,h4,h5,h6{
-	color:hsl(0, 0%, 30%);
+    color:hsl(0, 0%, 30%);
+    font-family: 'Montserrat', sans-serif;
 }
 
 .user-message{
-	color: #fff;
-	margin-right: 15px;
+    color: #fff;
+    margin-right: 15px;
 }
 
 #accountbtn{
-	margin-right: 15px;
+    margin-right: 15px;
 }
 
 .box-element{
-	box-shadow:hsl(0, 0%, 80%) 0 0 16px;
-	background-color: #fff;
-	border-radius: 4px;
-	padding: 10px;
+    box-shadow:hsl(0, 0%, 80%) 0 0 16px;
+    background-color: #fff;
+    border-radius: 4px;
+    padding: 10px;
 }
 
 .thumbnail {
-	width: 100%;
-	height: 300px;
-	object-fit: cover;
-	-webkit-box-shadow: -1px -3px 5px -2px rgba(214, 214, 214, 1);
-	-moz-box-shadow: -1px -3px 5px -2px rgba(214, 214, 214, 1);
-	box-shadow: -1px -3px 5px -2px rgba(214, 214, 214, 1);
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    -webkit-box-shadow: -1px -3px 5px -2px rgba(214, 214, 214, 1);
+    -moz-box-shadow: -1px -3px 5px -2px rgba(214, 214, 214, 1);
+    box-shadow: -1px -3px 5px -2px rgba(214, 214, 214, 1);
 }
 
 .product{
-	border-radius: 0 0 4px 4px;
+    border-radius: 0 0 4px 4px;
 }
 
 .bg-dark{
-	background-color: #4f868c!important;
+    background-color: #4f868c!important;
 }
 
 #likes-icon{
-	width:30px;
-	display: inline-block;
-	margin-right: 15px;
-}
-
-
-#likes-total{
-	display: block;
-	text-align: center;
-	color:#fff;
-	background-color: red;
-	width: 20px;
-	height: 25px;
-	border-radius: 50%;
-	font-size: 14px;
+    width:30px;
+    display: inline-block;
+    margin-right: 15px;
 }
 
 .col-lg-4, .col-lg-6, .col-lg-8, .col-lg-12{
-	margin-top: 10px;
+    margin-top: 10px;
 }
 
 .btn{
-	border-radius: 0;
+    border-radius: 0;
 }
 
 .row-image{
-	width: 100px;
+    width: 100px;
 }
 
 .form-field{
-	width:250px;
-	display: inline-block;
-	padding: 5px;
+    width:250px;
+    display: inline-block;
+    padding: 5px;
 }
 
 .likes-row{
