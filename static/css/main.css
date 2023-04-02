@@ -68,6 +68,11 @@
     color: white;
 }
 
+.btn-green {
+    background-color: #28a745;
+    color: #fff;
+}
+
 body{
     background-color: hsl(0, 0%, 98%);
 }

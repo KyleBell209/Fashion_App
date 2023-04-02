@@ -338,6 +338,7 @@ function updateUserOrder(productId, action, source, event) {
       let superliked = false;
       if (action === "superlike" && data.superliked) {
           superliked = true;
+          location.reload();
       }
   
       const response_data = {
@@ -352,7 +353,6 @@ function updateUserOrder(productId, action, source, event) {
           );
   
           if (data.superliked) {
-              alert(data.message);
               superlikeBtn.classList.remove("btn-outline-primary");
               superlikeBtn.classList.add("superlike-active");
           } else {

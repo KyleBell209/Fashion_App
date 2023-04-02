@@ -66,6 +66,12 @@ class Likes(models.Model):
 		total = sum([item.quantity for item in likeitems])
 		return total 
 
+	@property
+	def get_likes_product_ids(self):
+		likeitems = self.likeitem_set.all()
+		product_ids = [item.product.id for item in likeitems]
+		return product_ids 
+
 class LikeItem(models.Model):
     product = models.ForeignKey(ProductTest, on_delete=models.SET_NULL, null=True)
     likes = models.ForeignKey(Likes, on_delete=models.SET_NULL, null=True)

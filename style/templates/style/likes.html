@@ -1,6 +1,7 @@
 {% extends 'style/main.html' %}
 {% load static %}
 {% load custom_filters %}
+{% load superlike_tag%}
 {% block content %}
 
 <div class="row">
@@ -74,8 +75,7 @@
 						<img class="row-image" src="{{ rec_image.image_url }}" alt="">
 						<p><strong>{{ rec_image.get_related_product_name }}</strong></p>
 						<button data-product="{{ rec_image.image_url }}" data-action="add" data-source="likes" class="btn btn-outline-secondary add-btn update-likes">Add to Likes</button>
-						<button data-product="{{ rec_image.image_url }}" data-action="superlike" class="btn btn-outline-primary superlike-btn update-likes" data-source="likes">Superlike</button>
-
+						<button data-product="{{ rec_image.image_url }}" data-action="superlike" class="btn btn-outline-primary superlike-btn update-likes{% if items_superliked_status|default:False and items_superliked_status|get_item:rec_image.image_url|default:False %} superlike-active{% endif %}" data-source="likes">Superlike</button>			
 					</div>
 				{% endfor %}	
 				</div>
@@ -92,7 +92,7 @@
 						<img class="row-image" src="{{ rec_image.image_url }}" alt="">
 						<p><strong>{{ rec_image.product_name }}</strong></p>
 						<button data-product="{{ rec_image.image_url }}" data-action="add" data-source="likes" class="btn btn-outline-secondary add-btn update-likes">Add to Likes</button>
-						<button data-product="{{ rec_image.image_url }}" data-action="superlike" class="btn btn-outline-primary superlike-btn update-likes" data-source="likes">Superlike</button>
+						<button data-product="{{ rec_image.image_url }}" data-action="superlike" class="btn btn-outline-primary superlike-btn update-likes{% if items_superliked_status|default:False and items_superliked_status|get_item:rec_image.image_url|default:False %} superlike-active{% endif %}" data-source="likes">Superlike</button>
 					</div>
 					{% endfor %}
 				</div>

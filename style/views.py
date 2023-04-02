@@ -27,25 +27,39 @@ def style(request):
     user_preferences = request.user.customer.preferences
     recommended_products = get_recommended_products(product_list, user_preferences)
 
+    # Get filters from request
+    q = request.GET.get('q', '').lower()
+    master_category = request.GET.get('master_category', None)
+    sub_category = request.GET.get('sub_category', None)
+
+    # Filter products according to the search query, master category, and sub category
+    filtered_products = [
+        product for product in recommended_products
+        if (not q or q in product.productDisplayName.lower()) and
+           (not master_category or master_category == product.masterCategory) and
+           (not sub_category or sub_category == product.subCategory)
+    ]
+
     # Determine the number of products to show per page
     num_products_per_page = 20
-    total_num_products = len(recommended_products)
+    total_num_products = len(filtered_products)
     remaining_products = total_num_products % num_products_per_page
     if remaining_products == 0:
         num_pages = total_num_products // num_products_per_page
     else:
         num_pages = total_num_products // num_products_per_page + 1
 
-    paginator = Paginator(recommended_products, num_products_per_page)
+    paginator = Paginator(filtered_products, num_products_per_page)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
     # If this is the last page, adjust the number of products per page to be equal to the remaining products
     if page_obj.number == num_pages and remaining_products != 0:
-        paginator = Paginator(recommended_products, remaining_products)
+        paginator = Paginator(filtered_products, remaining_products)
         page_obj = paginator.get_page(page_number)
 
-    context = {'page_obj': page_obj, 'likesItems': likesItems, 'items_superliked_status': items_superliked_status}
+    likesProductIds = likes.get_likes_product_ids
+    context = {'page_obj': page_obj, 'likesItems': likesItems, 'likesProductIds': likesProductIds, 'items_superliked_status': items_superliked_status}
     return render(request, 'style/style.html', context)
 
 
