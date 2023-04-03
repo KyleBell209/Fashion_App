@@ -14,6 +14,7 @@ import requests
 from urllib.request import urlopen
 import tempfile
 from concurrent.futures import ThreadPoolExecutor
+import time
 
 # Load the pre-trained ResNet50 model
 base_model = ResNet50(weights='imagenet', include_top=False, input_shape=(224, 224, 3))
@@ -30,7 +31,7 @@ feature_list = np.array(pickle.load(open('embeddings.pkl', 'rb')))
 filenames = pickle.load(open('filenames.pkl', 'rb'))
 
 # Fit the NearestNeighbors object once and cache it
-neighbors = NearestNeighbors(n_neighbors=11, algorithm='brute', metric='euclidean')
+neighbors = NearestNeighbors(n_neighbors=11, algorithm='brute', metric='cosine')
 neighbors.fit(feature_list)
 
 def process_image(image_source):
@@ -65,6 +66,7 @@ def get_related_product_masterCategory(image_url):
         return None
 
 def get_image_recommendations(product_id):
+    start_time = time.time()
     existing_recommendations = RecommendedImage.objects.filter(product_id=product_id)
 
     if existing_recommendations.exists():
@@ -74,6 +76,7 @@ def get_image_recommendations(product_id):
     master_category = product.masterCategory
     product_gender = product.gender  # Fetch product gender
     image_url = product.imageURL
+
     preprocessed_img = process_image(image_url)
     normalized_result = get_feature_vector(preprocessed_img)
 
@@ -107,6 +110,10 @@ def get_image_recommendations(product_id):
 
     RecommendedImage.objects.bulk_create(recommended_images)
 
+    end_time = time.time()
+
+    print(f"Execution time for get_image_recommendations: {end_time - start_time} seconds")
+
     return recommended_images
 
 
@@ -115,6 +122,7 @@ def process_image_and_extract_features(image_source):
     return get_feature_vector(preprocessed_img)
 
 def get_mean_likes_recommendations(product_image_urls, weights=None, master_category=None, gender=None, articleType=None, subCategory=None):
+    start_time = time.time()
     if len(product_image_urls) == 0:
         return []
 
@@ -158,6 +166,10 @@ def get_mean_likes_recommendations(product_image_urls, weights=None, master_cate
 
     if subCategory is not None:
             recommended_images = [rec_image for rec_image in recommended_images if ProductTest.objects.get(id=int(re.search(r'(?<=/images\\).+?(?=.jpg)', rec_image['image_url']).group())).subCategory == subCategory]
+
+    end_time = time.time()
+
+    print(f"Execution time for mean recommendations: {end_time - start_time} seconds")
 
     return recommended_images
 
