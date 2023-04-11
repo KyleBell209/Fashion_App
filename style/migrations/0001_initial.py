@@ -23,7 +23,7 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.CreateModel(
-            name='ProductTest',
+            name='product',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('gender', models.CharField(max_length=200, verbose_name='gender')),
@@ -60,8 +60,8 @@ class Migration(migrations.Migration):
                 ('image_url', models.CharField(max_length=500, null=True)),
                 ('masterCategory', models.CharField(max_length=200, null=True)),
                 ('related_product_masterCategory', models.CharField(max_length=200, null=True)),
-                ('product', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='style.producttest')),
-                ('product_test', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='recommended_images', to='style.producttest')),
+                ('product', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='style.product')),
+                ('product_test', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='recommended_images', to='style.product')),
             ],
         ),
         migrations.CreateModel(
@@ -84,7 +84,7 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=200, null=True)),
                 ('superlike', models.BooleanField(default=False)),
                 ('likes', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='style.likes')),
-                ('product', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='style.producttest')),
+                ('product', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='style.product')),
             ],
         ),
         migrations.AddField(

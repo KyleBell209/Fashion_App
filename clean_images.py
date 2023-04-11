@@ -10,7 +10,7 @@ django.setup()
 
 # Import Django and models
 import django
-from style.models import ProductTest
+from style.models import FashionProduct
 
 django.setup()
 
@@ -89,41 +89,42 @@ target_categories = [
     "Saree"
     "Dupatta",
     "Salwar",
-    "Churidar",
+    "Chuirdar",
     "Salwar and Dupatta"
     "Patiala",
+    "Socks",
 ]
 
 # Retrieve the products with the specified category values
-target_masterCategories = ProductTest.objects.filter(masterCategory__in=target_categories)
-target_subCategories = ProductTest.objects.filter(subCategory__in=target_categories)
-target_articleType = ProductTest.objects.filter(articleType__in=target_categories)
-target_gender = ProductTest.objects.filter(gender__in=target_categories)
-target_usage = ProductTest.objects.filter(usage__in=target_categories)
-target_productDisplayName = ProductTest.objects.filter(
+target_masterCategories = FashionProduct.objects.filter(masterCategory__in=target_categories)
+target_subCategories = FashionProduct.objects.filter(subCategory__in=target_categories)
+target_articleType = FashionProduct.objects.filter(articleType__in=target_categories)
+target_gender = FashionProduct.objects.filter(gender__in=target_categories)
+target_usage = FashionProduct.objects.filter(usage__in=target_categories)
+target_productDisplayName = FashionProduct.objects.filter(
     Q(productDisplayName__icontains="kid") | 
     Q(productDisplayName__icontains="kids") |
     Q(productDisplayName__icontains="child") |
     Q(productDisplayName__icontains="children")
 )
 
-target_accessories = ProductTest.objects.filter(
+target_accessories = FashionProduct.objects.filter(
     masterCategory="Accessories",
     productDisplayName__iregex=r'(shoe|sandal|flip flop|shirt)'
 )
 
-target_apparel = ProductTest.objects.filter(
+target_apparel = FashionProduct.objects.filter(
     masterCategory="Apparel",
     productDisplayName__iregex=r'(leather belt)'
 )
 
-target_footwear = ProductTest.objects.filter(
+target_footwear = FashionProduct.objects.filter(
     masterCategory="Footwear",
     productDisplayName__iregex=r'(shirt)'
 )
 
 #removing broken imagepath as it is assigned to many broken products as placeholder
-target_imagePath = ProductTest.objects.filter(imagePath__icontains="1165")
+target_imagePath = FashionProduct.objects.filter(imagePath__icontains="1165")
 
 # Set file permissions for the static\images\ folder
 folder_path = os.path.join(os.path.abspath(os.path.join(os.path.dirname(__file__))), "static/images")
@@ -254,12 +255,12 @@ for product in target_imagePath:
     print(f"Deleted product with imagePath containing '1165': {product.imagePath}")
 
 # Find products with duplicate imagePaths
-duplicate_imagePaths = ProductTest.objects.values('imagePath').annotate(
+duplicate_imagePaths = FashionProduct.objects.values('imagePath').annotate(
     duplicates=Count('imagePath')).filter(duplicates__gt=1)
 
 # Print details of products with duplicate imagePaths
 for duplicate_imagePath in duplicate_imagePaths:
-    duplicate_products = ProductTest.objects.filter(
+    duplicate_products = FashionProduct.objects.filter(
         imagePath=duplicate_imagePath['imagePath'])
     print(f"Duplicate imagePath: {duplicate_imagePath['imagePath']}")
     for product in duplicate_products:

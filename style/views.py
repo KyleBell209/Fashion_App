@@ -15,43 +15,59 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib import messages
+from django.db import transaction
+import time
 
 @login_required(login_url='userlogin')
 def style(request):
     customer = request.user.customer
-    likes, created = Likes.objects.get_or_create(customer=customer, complete=False)
+    likes, created = Likes.objects.get_or_create(customer=customer)
     items = likes.likeitem_set.all()
     likesItems = likes.get_likes_items
     items_superliked_status = {item.product_id: item.superliked for item in items}
-    product_list = ProductTest.objects.all()
+    product_list = FashionProduct.objects.all()
     user_preferences = request.user.customer.preferences
     recommended_products = get_recommended_products(product_list, user_preferences)
 
+    # Get filters from request
+    q = request.GET.get('q', '').lower()
+    master_category = request.GET.get('master_category', None)
+    sub_category = request.GET.get('sub_category', None)
+
+    # Filter products according to the search query, master category, and sub category
+    filtered_products = [
+        product for product in recommended_products
+        if (not q or q in product.productDisplayName.lower()) and
+           (not master_category or master_category == product.masterCategory) and
+           (not sub_category or sub_category == product.subCategory)
+    ]
+
     # Determine the number of products to show per page
     num_products_per_page = 20
-    total_num_products = len(recommended_products)
+    total_num_products = len(filtered_products)
     remaining_products = total_num_products % num_products_per_page
     if remaining_products == 0:
         num_pages = total_num_products // num_products_per_page
     else:
         num_pages = total_num_products // num_products_per_page + 1
 
-    paginator = Paginator(recommended_products, num_products_per_page)
+    paginator = Paginator(filtered_products, num_products_per_page)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
     # If this is the last page, adjust the number of products per page to be equal to the remaining products
     if page_obj.number == num_pages and remaining_products != 0:
-        paginator = Paginator(recommended_products, remaining_products)
+        paginator = Paginator(filtered_products, remaining_products)
         page_obj = paginator.get_page(page_number)
 
-    context = {'page_obj': page_obj, 'likesItems': likesItems, 'items_superliked_status': items_superliked_status}
+    likesProductIds = likes.get_likes_product_ids
+    context = {'page_obj': page_obj, 'likesItems': likesItems, 'likesProductIds': likesProductIds, 'items_superliked_status': items_superliked_status}
     return render(request, 'style/style.html', context)
 
 
 @staff_member_required
 def delete_product(request, product_id):
-    product = ProductTest.objects.get(id=product_id)
+    product = FashionProduct.objects.get(id=product_id)
     image_path = os.path.join(settings.MEDIA_ROOT, str(product.imageURL))
 
     # Delete the image file
@@ -94,11 +110,11 @@ def survey(request):
         customer.save()
 
         # Update likes after saving preferences
-        likes, _ = Likes.objects.get_or_create(customer=customer, complete=False)        
+        likes, _ = Likes.objects.get_or_create(customer=customer)        
 
         return redirect('style')
 
-    product_list = ProductTest.objects.all()
+    product_list = FashionProduct.objects.all()
     user_preferences = request.user.customer.preferences
     filtered_products = filter_products_by_preferences(product_list, user_preferences)
 
@@ -124,19 +140,41 @@ def clear_preferences(request):
     customer.save()
     return JsonResponse({'success': True})
 
+@login_required
+def delete_account(request):
+    if request.method == 'POST':
+        user = request.user
+        customer = user.customer
+        likes = Likes.objects.filter(customer=customer)
+        like_items = LikeItem.objects.filter(likes__in=likes)
+        user_preferences = UserPreference.objects.filter(customer=customer)
+
+        like_items.delete()
+        likes.delete()
+        user_preferences.delete()
+        customer.delete()
+        user.delete()
+        logout(request)
+
+        messages.success(request, 'User account successfully deleted.')
+        return redirect('userlogin')  # Redirect to the login page after deleting the account
+    else:  # Handle GET request
+        return render(request, 'style/delete_account_confirm.html')
 
 @login_required(login_url='userlogin')
 def likes(request):
     customer = request.user.customer
-    likes, created = Likes.objects.get_or_create(customer=customer, complete=False)
+    likes, created = Likes.objects.get_or_create(customer=customer)
     items = likes.likeitem_set.all()
     likesItems = likes.get_likes_items
     
-    filter_type = request.GET.get('filter', 'masterCategory')
+    filter_type = request.GET.get('filter', 'articleType')
 
     items_by_filter = {}
     recommended_images = {}
     product_image_urls = []
+
+    start_time = time.time()
 
     for item in items:
         items_by_filter.setdefault(getattr(item.product, filter_type), []).append(item)
@@ -167,12 +205,16 @@ def likes(request):
         'recommended_images': recommended_images,
         'filter_mean_recommendations': filter_mean_recommendations,
     }
+
+    end_time = time.time()
+
+    print(f"Execution time for entire recommendations: {end_time - start_time} seconds")
     return render(request, 'style/likes.html', context)
 
 @login_required(login_url='userlogin')
 def remove_all_likes(request):
     customer = request.user.customer
-    likes, created = Likes.objects.get_or_create(customer=customer, complete=False)
+    likes, created = Likes.objects.get_or_create(customer=customer)
     items = likes.likeitem_set.all()
     items.delete()
     return redirect('likes')
@@ -187,7 +229,7 @@ def get_filtered_products(request):
         customer.preferences = preferences
         customer.save()
         
-        product_list = ProductTest.objects.all()
+        product_list = FashionProduct.objects.all()
         filtered_products = filter_products_by_preferences(product_list, preferences)
         
         data = [{
@@ -200,7 +242,7 @@ def get_filtered_products(request):
 
 
 @login_required(login_url='userlogin')
-def updateItem(request):
+def updateLike(request):
     data = json.loads(request.body)
     product_info = data['productId']
     action = data['action']
@@ -217,9 +259,9 @@ def updateItem(request):
     else:
         product_id = int(product_info)
 
-    product = ProductTest.objects.get(id=product_id)
+    product = FashionProduct.objects.get(id=product_id)
 
-    likes, created = Likes.objects.get_or_create(customer=customer, complete=False)
+    likes, created = Likes.objects.get_or_create(customer=customer)
     orderItem, created = LikeItem.objects.get_or_create(likes=likes, product=product)
 
     if action == 'add':

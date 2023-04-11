@@ -8,7 +8,6 @@ import re
 class Customer(models.Model):
     user = models.OneToOneField(User, null=True, blank=True, on_delete=models.CASCADE)
     name = models.CharField(max_length=200, null=True)
-    email = models.CharField(max_length=200)
     preferences = models.OneToOneField('UserPreference', null=True, blank=True, on_delete=models.SET_NULL, related_name='customer_preferences')
 
     def __str__(self):
@@ -28,7 +27,7 @@ class UserPreference(models.Model):
     def __str__(self):
         return f'{self.customer.name} Preferences'
 
-class ProductTest(models.Model):
+class FashionProduct(models.Model):
 	
 	gender = models.CharField(_("gender"),max_length=200)
 	masterCategory = models.CharField(_("masterCategory"),max_length=200)
@@ -48,14 +47,8 @@ class ProductTest(models.Model):
 	def imageURL(self):
 		return f'{settings.MEDIA_URL}{self.imagePath}'
 
-#comment out class Product below to use ProductTest above
-
-
 class Likes(models.Model):
 	customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True, blank=True)
-	date_ordered = models.DateTimeField(auto_now_add=True)
-	complete = models.BooleanField(default=False)
-	transaction_id = models.CharField(max_length=100, null=True)
 
 	def __str__(self):
 		return str(self.id)
@@ -66,8 +59,14 @@ class Likes(models.Model):
 		total = sum([item.quantity for item in likeitems])
 		return total 
 
+	@property
+	def get_likes_product_ids(self):
+		likeitems = self.likeitem_set.all()
+		product_ids = [item.product.id for item in likeitems]
+		return product_ids 
+
 class LikeItem(models.Model):
-    product = models.ForeignKey(ProductTest, on_delete=models.SET_NULL, null=True)
+    product = models.ForeignKey(FashionProduct, on_delete=models.SET_NULL, null=True)
     likes = models.ForeignKey(Likes, on_delete=models.SET_NULL, null=True)
     quantity = models.IntegerField(default=0, null=True, blank=True)
     date_added = models.DateTimeField(auto_now_add=True)
@@ -83,8 +82,7 @@ class LikeItem(models.Model):
 
 
 class RecommendedImage(models.Model):
-    product_test = models.ForeignKey(ProductTest, on_delete=models.CASCADE, null=True, related_name='recommended_images')
-    product = models.ForeignKey(ProductTest, on_delete=models.CASCADE, null=True)
+    product = models.ForeignKey(FashionProduct, on_delete=models.CASCADE, null=True)
     image_url = models.CharField(max_length=500, null=True)
     masterCategory = models.CharField(max_length=200, null=True)
     related_product_masterCategory = models.CharField(max_length=200, null=True) # Add this field
@@ -96,7 +94,7 @@ class RecommendedImage(models.Model):
         match = re.search(r'(?<=/images\\).+?(?=.jpg)', self.image_url)
         if match:
             product_id = int(match.group())
-            related_product = ProductTest.objects.get(id=product_id)
+            related_product = FashionProduct.objects.get(id=product_id)
             return related_product.productDisplayName
         else:
             return "Product not found"
@@ -105,7 +103,7 @@ class RecommendedImage(models.Model):
         match = re.search(r'(?<=/images\\).+?(?=.jpg)', self.image_url)
         if match:
             product_id = int(match.group())
-            related_product = ProductTest.objects.get(id=product_id)
+            related_product = FashionProduct.objects.get(id=product_id)
             return related_product.masterCategory
         else:
             return None

@@ -314,16 +314,16 @@ function attachAddTolikesEventListeners() {
       if (user == 'AnonymousUser') {
         console.log('User is not authenticated');
       } else {
-        updateUserOrder(productId, action, source, event);
+        updateLike(productId, action, source, event);
       }
     });
   });
 }
 
-function updateUserOrder(productId, action, source, event) {
+function updateLike(productId, action, source, event) {
   event.preventDefault();
 
-  fetch('/update_item/', {
+  fetch('/update_like/', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -338,6 +338,7 @@ function updateUserOrder(productId, action, source, event) {
       let superliked = false;
       if (action === "superlike" && data.superliked) {
           superliked = true;
+          location.reload();
       }
   
       const response_data = {
@@ -352,7 +353,6 @@ function updateUserOrder(productId, action, source, event) {
           );
   
           if (data.superliked) {
-              alert(data.message);
               superlikeBtn.classList.remove("btn-outline-primary");
               superlikeBtn.classList.add("superlike-active");
           } else {

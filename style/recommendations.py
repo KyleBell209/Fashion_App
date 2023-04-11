@@ -7,16 +7,19 @@ import numpy as np
 import tensorflow
 from numpy.linalg import norm
 from sklearn.neighbors import NearestNeighbors
-from tensorflow.keras.applications.resnet50 import ResNet50, preprocess_input
+from tensorflow.keras.applications.resnet import ResNet101, preprocess_input
 from tensorflow.keras.layers import GlobalMaxPooling2D
 from tensorflow.keras.preprocessing import image
 import requests
 from urllib.request import urlopen
 import tempfile
 from concurrent.futures import ThreadPoolExecutor
+import time
+from functools import lru_cache
+
 
 # Load the pre-trained ResNet50 model
-base_model = ResNet50(weights='imagenet', include_top=False, input_shape=(224, 224, 3))
+base_model = ResNet101(weights='imagenet', include_top=False, input_shape=(224, 224, 3))
 base_model.trainable = False
 
 # Create a new model that takes the output of ResNet50 and applies global max pooling
@@ -26,12 +29,13 @@ model = tensorflow.keras.Sequential([
 ])
 
 # Load the pre-computed feature vectors and filenames
-feature_list = np.array(pickle.load(open('embeddings.pkl', 'rb')))
-filenames = pickle.load(open('filenames.pkl', 'rb'))
+feature_list = np.array(pickle.load(open('101embeddings.pkl', 'rb')))
+filenames = pickle.load(open('101filenames.pkl', 'rb'))
 
 # Fit the NearestNeighbors object once and cache it
-neighbors = NearestNeighbors(n_neighbors=11, algorithm='brute', metric='euclidean')
+neighbors = NearestNeighbors(n_neighbors=21, algorithm='brute', metric='cosine')
 neighbors.fit(feature_list)
+
 
 def process_image(image_source):
     if image_source.startswith('http'):  # If the image_source is a URL
@@ -59,21 +63,23 @@ def get_related_product_masterCategory(image_url):
     match = re.search(r'(?<=/images\\).+?(?=.jpg)', image_url)
     if match:
         product_id = int(match.group())
-        related_product = ProductTest.objects.get(id=product_id)
+        related_product = FashionProduct.objects.get(id=product_id)
         return related_product.masterCategory
     else:
         return None
-
+    
 def get_image_recommendations(product_id):
+    start_time = time.time()
     existing_recommendations = RecommendedImage.objects.filter(product_id=product_id)
 
     if existing_recommendations.exists():
         return existing_recommendations
 
-    product = ProductTest.objects.get(id=product_id)
+    product = FashionProduct.objects.get(id=product_id)
     master_category = product.masterCategory
     product_gender = product.gender  # Fetch product gender
     image_url = product.imageURL
+
     preprocessed_img = process_image(image_url)
     normalized_result = get_feature_vector(preprocessed_img)
 
@@ -88,7 +94,7 @@ def get_image_recommendations(product_id):
                     f'https://storage.googleapis.com/django-bucket-kb/{filenames[file]}'
                 ),
                 image_url=f'https://storage.googleapis.com/django-bucket-kb/{filenames[file]}'
-            ) for file in indices[0][1:6] if ProductTest.objects.get(id=int(re.search(r'(?<=/images\\).+?(?=.jpg)', f'https://storage.googleapis.com/django-bucket-kb/{filenames[file]}').group())).gender == product_gender
+            ) for file in indices[0][1:6] if FashionProduct.objects.get(id=int(re.search(r'(?<=/images\\).+?(?=.jpg)', f'https://storage.googleapis.com/django-bucket-kb/{filenames[file]}').group())).gender == product_gender
         ]
     else:  # If product_gender is not set, do not filter based on gender
         recommended_images = [
@@ -107,14 +113,20 @@ def get_image_recommendations(product_id):
 
     RecommendedImage.objects.bulk_create(recommended_images)
 
+    end_time = time.time()
+
+    print(f"Execution time for get_image_recommendations: {end_time - start_time} seconds")
+
     return recommended_images
 
 
+@lru_cache(maxsize=256)  # Add caching decorator to cache the results of this function
 def process_image_and_extract_features(image_source):
     preprocessed_img = process_image(image_source)
     return get_feature_vector(preprocessed_img)
 
 def get_mean_likes_recommendations(product_image_urls, weights=None, master_category=None, gender=None, articleType=None, subCategory=None):
+    start_time = time.time()
     if len(product_image_urls) == 0:
         return []
 
@@ -123,8 +135,17 @@ def get_mean_likes_recommendations(product_image_urls, weights=None, master_cate
     elif len(weights) != len(product_image_urls):
         raise ValueError("Length of weights must match the length of product_image_urls")
 
-    with ThreadPoolExecutor() as executor:
-        feature_vectors = list(executor.map(process_image_and_extract_features, product_image_urls))
+    # Perform batch processing to reduce overhead
+    batch_size = 32
+    num_batches = int(np.ceil(len(product_image_urls) / batch_size))
+    feature_vectors = []
+
+    for i in range(num_batches):
+        batch_image_urls = product_image_urls[i * batch_size : (i + 1) * batch_size]
+        with ThreadPoolExecutor() as executor:
+            batch_feature_vectors = list(executor.map(process_image_and_extract_features, batch_image_urls))
+        feature_vectors.extend(batch_feature_vectors)
+
 
     # Calculate the weighted mean of feature vectors
     mean_feature_vector = np.average(feature_vectors, axis=0, weights=weights)
@@ -137,7 +158,7 @@ def get_mean_likes_recommendations(product_image_urls, weights=None, master_cate
         match = re.search(r'(?<=/images\\).+?(?=.jpg)', image_url)
         if match:
             product_id = int(match.group())
-            related_product = ProductTest.objects.get(id=product_id)
+            related_product = FashionProduct.objects.get(id=product_id)
             return related_product.productDisplayName
         else:
             return "Product not found"
@@ -151,16 +172,18 @@ def get_mean_likes_recommendations(product_image_urls, weights=None, master_cate
             recommended_images = [rec_image for rec_image in recommended_images if rec_image['master_category'] == master_category]
 
     if gender is not None:
-            recommended_images = [rec_image for rec_image in recommended_images if ProductTest.objects.get(id=int(re.search(r'(?<=/images\\).+?(?=.jpg)', rec_image['image_url']).group())).gender == gender]
+            recommended_images = [rec_image for rec_image in recommended_images if FashionProduct.objects.get(id=int(re.search(r'(?<=/images\\).+?(?=.jpg)', rec_image['image_url']).group())).gender == gender]
 
     if articleType is not None:
-            recommended_images = [rec_image for rec_image in recommended_images if ProductTest.objects.get(id=int(re.search(r'(?<=/images\\).+?(?=.jpg)', rec_image['image_url']).group())).articleType == articleType]
+            recommended_images = [rec_image for rec_image in recommended_images if FashionProduct.objects.get(id=int(re.search(r'(?<=/images\\).+?(?=.jpg)', rec_image['image_url']).group())).articleType == articleType]
 
     if subCategory is not None:
-            recommended_images = [rec_image for rec_image in recommended_images if ProductTest.objects.get(id=int(re.search(r'(?<=/images\\).+?(?=.jpg)', rec_image['image_url']).group())).subCategory == subCategory]
+            recommended_images = [rec_image for rec_image in recommended_images if FashionProduct.objects.get(id=int(re.search(r'(?<=/images\\).+?(?=.jpg)', rec_image['image_url']).group())).subCategory == subCategory]
+
+    end_time = time.time()
+    print(f"Execution time for mean recommendations: {end_time - start_time} seconds")
 
     return recommended_images
-
 
 def get_recommended_products(product_list, user_preferences):
     if user_preferences is None:
@@ -181,3 +204,4 @@ def get_recommended_products(product_list, user_preferences):
     ]
 
     return recommended_products
+

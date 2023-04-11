@@ -1,15 +1,14 @@
 {% extends 'style/main.html' %}
 {% load static %}
 {% load custom_filters %}
+{% load superlike_tag%}
 {% block content %}
 
 <div class="row">
 	<div class="col-lg-12">
 		<div class="box-element">
 			
-			<a  class="btn btn-outline-dark" href="{% url 'style' %}">&#x2190; Continue Shopping</a>
-
-			<br>
+		
 			<br>
 			<table class="table">
 				<tr>
@@ -69,13 +68,12 @@
 					<div style="flex:1"></div>
 				</div>
 				<div class="likes-row recommended-images">
-					{% for rec_image in recommended_images|get_item:item_id %}
+					{% for rec_image in recommended_images|get_item:item_id|slice:":5" %}
 					<div style="flex:1">
 						<img class="row-image" src="{{ rec_image.image_url }}" alt="">
 						<p><strong>{{ rec_image.get_related_product_name }}</strong></p>
 						<button data-product="{{ rec_image.image_url }}" data-action="add" data-source="likes" class="btn btn-outline-secondary add-btn update-likes">Add to Likes</button>
-						<button data-product="{{ rec_image.image_url }}" data-action="superlike" class="btn btn-outline-primary superlike-btn update-likes" data-source="likes">Superlike</button>
-
+						<button data-product="{{ rec_image.image_url }}" data-action="superlike" class="btn btn-outline-primary superlike-btn update-likes{% if items_superliked_status|default:False and items_superliked_status|get_item:rec_image.image_url|default:False %} superlike-active{% endif %}" data-source="likes">Superlike</button>			
 					</div>
 				{% endfor %}	
 				</div>
@@ -92,7 +90,7 @@
 						<img class="row-image" src="{{ rec_image.image_url }}" alt="">
 						<p><strong>{{ rec_image.product_name }}</strong></p>
 						<button data-product="{{ rec_image.image_url }}" data-action="add" data-source="likes" class="btn btn-outline-secondary add-btn update-likes">Add to Likes</button>
-						<button data-product="{{ rec_image.image_url }}" data-action="superlike" class="btn btn-outline-primary superlike-btn update-likes" data-source="likes">Superlike</button>
+						<button data-product="{{ rec_image.image_url }}" data-action="superlike" class="btn btn-outline-primary superlike-btn update-likes{% if items_superliked_status|default:False and items_superliked_status|get_item:rec_image.image_url|default:False %} superlike-active{% endif %}" data-source="likes">Superlike</button>
 					</div>
 					{% endfor %}
 				</div>

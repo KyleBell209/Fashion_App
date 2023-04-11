@@ -15,7 +15,7 @@ def register(request):
             if form.is_valid():
                 user = form.save()
                 # Create a Customer instance for the new user
-                Customer.objects.create(user=user, name=user.username, email=user.email)
+                Customer.objects.create(user=user, name=user.username)
                 messages.success(request, 'Account was created for the user, ' + form.cleaned_data.get('username'))
                 return redirect('userlogin')
     context = {'form': form}

@@ -23,33 +23,31 @@
                 {% for error in form.non_field_errors %}
                     <p>{{error}}</p>
                 {%endfor%}
-                <div class="form-outline mb-4">
-                    {{form.username}}
-                  <label class="form-label" for="form3Example1cg">Username</label>
+                <div class="form-outline mb-4 text-center">
+                    <label class="form-label">Username</label>
+                  <br>
+                  {{form.username}}
                 </div>
+                
 
-                <div class="form-outline mb-4">
-                    {{form.email}}
-                  <label class="form-label" for="form3Example3cg">Email</label>
+                <div class="form-outline mb-4 text-center">
+                  <label class="form-label">Password</label>
+                  <br>
+                  {{form.password1}}    
                 </div>
-
-                <div class="form-outline mb-4">
-                    {{form.password1}}
-                  <label class="form-label" for="form3Example4cg">Password</label>
-                </div>
-
-                <div class="form-outline mb-4">
-                    {{form.password2}}
-                  <label class="form-label" for="form3Example4cdg">Confirm password</label>
+                <div class="form-outline mb-4 text-center">
+                  <label class="form-label" >Confirm password</label>
+                  <br>
+                    {{form.password2}}                 
                 </div>
                 {{form.errors}}
 
 
                 <div class="d-flex justify-content-center">
                 </div>
-                <input type="submit" class="btn btn-success btn-block btn-lg gradient-custom-4 text-body" value="Register" />
-                <p class="text-center text-muted mt-5 mb-0">Have already an account? <a href="{% url 'userlogin' %}"
-                    class="fw-bold text-body"><u>Login here</u></a></p>
+                <input type="submit" class="btn btn-outline-dark btn-block btn-lg gradient-custom-4 text-body" value="Register" />
+                <p class="text-center mt-5 mb-0">Already have an account?<a href="{% url 'userlogin' %}"> </p>
+                  <p class="text-center fw-bold text-body text-dark"><u>Login</u></p>
 
               </form>
 
