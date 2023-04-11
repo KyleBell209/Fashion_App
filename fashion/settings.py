@@ -5,14 +5,11 @@ from google.oauth2 import service_account
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
-SECRET_KEY = 'password'
+SECRET_KEY = 'ydvy5k($y@@7(m-qu-(c5wccyj06=1@d0bi384-5*pngl$2toz'
 
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
-
-# Application definition
 
 INSTALLED_APPS = [
     'django.contrib.admin',
