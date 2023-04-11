@@ -14,6 +14,9 @@ import requests
 from urllib.request import urlopen
 import tempfile
 from concurrent.futures import ThreadPoolExecutor
+import time
+from functools import lru_cache
+
 
 # Load the pre-trained ResNet50 model
 base_model = ResNet101(weights='imagenet', include_top=False, input_shape=(224, 224, 3))
@@ -30,7 +33,7 @@ feature_list = np.array(pickle.load(open('101embeddings.pkl', 'rb')))
 filenames = pickle.load(open('101filenames.pkl', 'rb'))
 
 # Fit the NearestNeighbors object once and cache it
-neighbors = NearestNeighbors(n_neighbors=11, algorithm='brute', metric='euclidean')
+neighbors = NearestNeighbors(n_neighbors=21, algorithm='brute', metric='cosine')
 neighbors.fit(feature_list)
 
 
@@ -178,10 +181,6 @@ def get_mean_likes_recommendations(product_image_urls, weights=None, master_cate
             recommended_images = [rec_image for rec_image in recommended_images if FashionProduct.objects.get(id=int(re.search(r'(?<=/images\\).+?(?=.jpg)', rec_image['image_url']).group())).subCategory == subCategory]
 
     end_time = time.time()
-    print(f"Execution time for mean recommendations: {end_time - start_time} seconds")
-
-    end_time = time.time()
-
     print(f"Execution time for mean recommendations: {end_time - start_time} seconds")
 
     return recommended_images
