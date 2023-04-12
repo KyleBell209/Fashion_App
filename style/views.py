@@ -217,6 +217,7 @@ def remove_all_likes(request):
     likes, created = Likes.objects.get_or_create(customer=customer)
     items = likes.likeitem_set.all()
     items.delete()
+    messages.success(request, 'Likes cleared')
     return redirect('likes')
 
 def get_filtered_products(request):

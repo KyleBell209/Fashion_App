@@ -27,8 +27,8 @@ for (i = 0; i < updateBtns.length; i++) {
         var productId = this.dataset.product;
         var action = this.dataset.action;
         var source = this.dataset.source || '';
-        console.log('productId:', productId, 'Action:', action);
-        console.log('USER:', user);
+        console.log('FashionProductID:', productId, 'UserAction:', action);
+        console.log('From User ', user);
 
         if (user == 'AnonymousUser') {
             console.log('NOT LOGGED IN!');

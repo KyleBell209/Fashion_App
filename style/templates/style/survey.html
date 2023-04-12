@@ -5,7 +5,7 @@
     <h1>Product Recommendation Survey</h1>
     <form id="preferences-form" method="POST">
       {% csrf_token %}
-      <button id="clear-preferences-btn" class="btn btn-warning mt-3">Clear preferences</button>
+      <button id="clear-preferences-btn" class="btn btn-danger mt-3">Clear preferences</button>
       <div class="form-group">
         <label for="gender">Gender</label>
         <select class="form-control" name="gender" id="gender">
