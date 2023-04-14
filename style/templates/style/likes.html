@@ -15,6 +15,13 @@
 					<th>
 						<form action="{% url 'remove_all_likes' %}" method="post">
 							{% csrf_token %}
+							{% if messages %}
+							{% for message in messages %}
+							<div class="alert {{ message.tags }}">
+								{{ message }}
+							</div>
+							{% endfor %}
+							{% endif %}
 							<button type="submit" class="btn btn-danger">Remove All Likes</button>
 						</form>
 					</th>
