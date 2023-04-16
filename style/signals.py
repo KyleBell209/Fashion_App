@@ -5,8 +5,8 @@ from .models import UserPreference, Likes
 @receiver(post_save, sender=UserPreference)
 def remove_mismatched_gender_items(sender, instance, **kwargs):
     preferences = instance
-    customer = preferences.customer
-    likes, _ = Likes.objects.get_or_create(customer=customer)
+    account = preferences.account
+    likes, _ = Likes.objects.get_or_create(account=account)
 
     for item in likes.likeitem_set.all():
         product_gender = item.product.gender

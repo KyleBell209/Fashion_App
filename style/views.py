@@ -20,13 +20,13 @@ import time
 
 @login_required(login_url='userlogin')
 def style(request):
-    customer = request.user.customer
-    likes, created = Likes.objects.get_or_create(customer=customer)
+    account = request.user.account
+    likes, created = Likes.objects.get_or_create(account=account)
     items = likes.likeitem_set.all()
     likesItems = likes.get_likes_items
     items_superliked_status = {item.product_id: item.superliked for item in items}
     product_list = FashionProduct.objects.all()
-    user_preferences = request.user.customer.preferences
+    user_preferences = request.user.account.preferences
     recommended_products = get_recommended_products(product_list, user_preferences)
 
     # Get filters from request
@@ -97,8 +97,8 @@ def filter_products_by_preferences(product_list, preferences):
 @login_required(login_url='userlogin')
 def survey(request):
     if request.method == 'POST':
-        customer = request.user.customer
-        preferences, created = UserPreference.objects.get_or_create(customer=customer)
+        account = request.user.account
+        preferences, created = UserPreference.objects.get_or_create(account=account)
         
         # Save previous gender preference
         prev_gender = preferences.gender
@@ -106,16 +106,16 @@ def survey(request):
         for field in ['gender', 'masterCategory', 'subCategory', 'articleType', 'baseColour', 'season', 'year', 'usage']:
             setattr(preferences, field, request.POST.get(field))
         preferences.save()
-        customer.preferences = preferences
-        customer.save()
+        account.preferences = preferences
+        account.save()
 
         # Update likes after saving preferences
-        likes, _ = Likes.objects.get_or_create(customer=customer)        
+        likes, _ = Likes.objects.get_or_create(account=account)        
 
         return redirect('style')
 
     product_list = FashionProduct.objects.all()
-    user_preferences = request.user.customer.preferences
+    user_preferences = request.user.account.preferences
     filtered_products = filter_products_by_preferences(product_list, user_preferences)
 
     context = {'filtered_products': filtered_products, 'user_preferences': user_preferences}
@@ -125,8 +125,8 @@ from django.http import JsonResponse
 
 @login_required(login_url='userlogin')
 def clear_preferences(request):
-    customer = request.user.customer
-    preferences, created = UserPreference.objects.get_or_create(customer=customer)
+    account = request.user.account
+    preferences, created = UserPreference.objects.get_or_create(account=account)
     preferences.gender = ''
     preferences.masterCategory = ''
     preferences.subCategory = ''
@@ -136,23 +136,23 @@ def clear_preferences(request):
     preferences.year = ''
     preferences.usage = ''
     preferences.save()
-    customer.preferences = preferences
-    customer.save()
+    account.preferences = preferences
+    account.save()
     return JsonResponse({'success': True})
 
 @login_required
 def delete_account(request):
     if request.method == 'POST':
         user = request.user
-        customer = user.customer
-        likes = Likes.objects.filter(customer=customer)
+        account = user.account
+        likes = Likes.objects.filter(account=account)
         like_items = LikeItem.objects.filter(likes__in=likes)
-        user_preferences = UserPreference.objects.filter(customer=customer)
+        user_preferences = UserPreference.objects.filter(account=account)
 
         like_items.delete()
         likes.delete()
         user_preferences.delete()
-        customer.delete()
+        account.delete()
         user.delete()
         logout(request)
 
@@ -163,8 +163,8 @@ def delete_account(request):
 
 @login_required(login_url='userlogin')
 def likes(request):
-    customer = request.user.customer
-    likes, created = Likes.objects.get_or_create(customer=customer)
+    account = request.user.account
+    likes, created = Likes.objects.get_or_create(account=account)
     items = likes.likeitem_set.all()
     likesItems = likes.get_likes_items
     
@@ -181,7 +181,7 @@ def likes(request):
         recommended_images[str(item.id)] = get_image_recommendations(item.product.id)
         product_image_urls.append(item.product.imageURL)
 
-    user_gender = customer.preferences.gender if customer.preferences and customer.preferences.gender else None
+    user_gender = account.preferences.gender if account.preferences and account.preferences.gender else None
 
     product_image_weights = [1.5 if item.superliked else 1 for item in items]
 
@@ -213,8 +213,8 @@ def likes(request):
 
 @login_required(login_url='userlogin')
 def remove_all_likes(request):
-    customer = request.user.customer
-    likes, created = Likes.objects.get_or_create(customer=customer)
+    account = request.user.account
+    likes, created = Likes.objects.get_or_create(account=account)
     items = likes.likeitem_set.all()
     items.delete()
     messages.success(request, 'Likes cleared')
@@ -222,13 +222,13 @@ def remove_all_likes(request):
 
 def get_filtered_products(request):
     if request.method == 'POST':
-        customer = request.user.customer
-        preferences, created = UserPreference.objects.get_or_create(customer=customer)
+        account = request.user.account
+        preferences, created = UserPreference.objects.get_or_create(account=account)
         for field in ['gender', 'masterCategory', 'subCategory', 'articleType', 'baseColour', 'season', 'year', 'usage']:
             setattr(preferences, field, request.POST.get(field))
         preferences.save()
-        customer.preferences = preferences
-        customer.save()
+        account.preferences = preferences
+        account.save()
         
         product_list = FashionProduct.objects.all()
         filtered_products = filter_products_by_preferences(product_list, preferences)
@@ -249,7 +249,7 @@ def updateLike(request):
     action = data['action']
     source = data.get('source', '')
 
-    customer = request.user.customer
+    account = request.user.account
 
     if source == 'likes':
         match = re.search(r'(?<=\/images\\).+?(?=.jpg)', product_info)
@@ -262,7 +262,7 @@ def updateLike(request):
 
     product = FashionProduct.objects.get(id=product_id)
 
-    likes, created = Likes.objects.get_or_create(customer=customer)
+    likes, created = Likes.objects.get_or_create(account=account)
     orderItem, created = LikeItem.objects.get_or_create(likes=likes, product=product)
 
     if action == 'add':

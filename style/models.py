@@ -5,16 +5,16 @@ from django.conf import settings
 import re
 # Create your models here.
 
-class Customer(models.Model):
+class Account(models.Model):
     user = models.OneToOneField(User, null=True, blank=True, on_delete=models.CASCADE)
     name = models.CharField(max_length=200, null=True)
-    preferences = models.OneToOneField('UserPreference', null=True, blank=True, on_delete=models.SET_NULL, related_name='customer_preferences')
+    preferences = models.OneToOneField('UserPreference', null=True, blank=True, on_delete=models.SET_NULL, related_name='account_preferences')
 
     def __str__(self):
         return self.name
 
 class UserPreference(models.Model):
-    customer = models.OneToOneField(Customer, on_delete=models.CASCADE, related_name='user_preference')
+    account = models.OneToOneField(Account, on_delete=models.CASCADE, related_name='user_preference')
     gender = models.CharField(max_length=200, null=True, blank=True)
     masterCategory = models.CharField(max_length=200, null=True, blank=True)
     subCategory = models.CharField(max_length=200, null=True, blank=True)
@@ -25,7 +25,7 @@ class UserPreference(models.Model):
     usage = models.CharField(max_length=200, null=True, blank=True)
     
     def __str__(self):
-        return f'{self.customer.name} Preferences'
+        return f'{self.account.name} Preferences'
 
 class FashionProduct(models.Model):
 	
@@ -48,7 +48,7 @@ class FashionProduct(models.Model):
 		return f'{settings.MEDIA_URL}{self.imagePath}'
 
 class Likes(models.Model):
-	customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True, blank=True)
+	account = models.ForeignKey(Account, on_delete=models.SET_NULL, null=True, blank=True)
 
 	def __str__(self):
 		return str(self.id)

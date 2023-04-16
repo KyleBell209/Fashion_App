@@ -17,7 +17,6 @@ from concurrent.futures import ThreadPoolExecutor
 import time
 from functools import lru_cache
 
-
 # Load the pre-trained ResNet50 model
 base_model = ResNet101(weights='imagenet', include_top=False, input_shape=(224, 224, 3))
 base_model.trainable = False
