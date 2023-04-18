@@ -2,7 +2,7 @@
 {% load static %}
 {% block content %}
   <div class="container">
-    <h1>Product Recommendation Survey</h1>
+    <h1>Clothing Preferences Profile</h1>
     <form id="preferences-form" method="POST">
       {% csrf_token %}
       <button id="clear-preferences-btn" class="btn btn-danger mt-3">Clear preferences</button>
@@ -64,7 +64,9 @@
           </div>
       </div>
     </form>
-    <button id="more-products" class="btn btn-secondary mt-3">More products?</button>
+    <br>
+    <button id="more-products" class="btn btn-secondary mt-3">Refresh Products</button>
+    <br>
     <div id="filtered-products" class="row">
       {% if filtered_products %}
         {% for product in filtered_products %}

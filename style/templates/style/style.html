@@ -55,7 +55,7 @@
     {% if not request.GET.q or request.GET.q|lower in product.productDisplayName|lower %}
         {% if not request.GET.master_category or request.GET.master_category == product.masterCategory %}
             <div class="col-lg-4">
-                <img class="thumbnail" src="{{ MEDIA_URL }}{{ product.imageURL }}">
+                <img class="ProductImage" src="{{ MEDIA_URL }}{{ product.imageURL }}">
                 <div class="box-element product">
                     <h6><strong>{{product.productDisplayName}}</strong></h6>
                     <h7><strong>{{product.masterCategory}}</strong></h7>

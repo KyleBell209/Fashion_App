@@ -4,7 +4,6 @@ from . import views
 from . import accounts
 
 urlpatterns = [
-	#Leave as empty string for base url
 	path('', views.style, name="style"),
 	path('likes/', views.likes, name="likes"),
 	path('update_like/', views.updateLike, name="update_like"),

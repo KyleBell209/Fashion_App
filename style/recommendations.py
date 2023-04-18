@@ -17,11 +17,11 @@ from concurrent.futures import ThreadPoolExecutor
 import time
 from functools import lru_cache
 
-# Load the pre-trained ResNet50 model
+# Load the pre-trained model
 base_model = ResNet101(weights='imagenet', include_top=False, input_shape=(224, 224, 3))
 base_model.trainable = False
 
-# Create a new model that takes the output of ResNet50 and applies global max pooling
+# Create a new model that takes the output of the model and applies global max pooling
 model = tensorflow.keras.Sequential([
     base_model,
     GlobalMaxPooling2D()
@@ -32,10 +32,10 @@ feature_list = np.array(pickle.load(open('101embeddings.pkl', 'rb')))
 filenames = pickle.load(open('101filenames.pkl', 'rb'))
 
 # Fit the NearestNeighbors object once and cache it
-neighbors = NearestNeighbors(n_neighbors=21, algorithm='brute', metric='cosine')
+neighbors = NearestNeighbors(n_neighbors=16, algorithm='brute', metric='cosine')
 neighbors.fit(feature_list)
 
-
+# Function to preprocess image and return preprocessed image
 def process_image(image_source):
     if image_source.startswith('http'):  # If the image_source is a URL
         response = requests.get(image_source)
@@ -53,11 +53,13 @@ def process_image(image_source):
     preprocessed_img = preprocess_input(expanded_img_array)
     return preprocessed_img
 
+# Function to get the feature vector for the preprocessed image
 def get_feature_vector(preprocessed_img):
     result = model.predict(preprocessed_img).flatten()
     normalized_result = result / norm(result)
     return normalized_result
 
+# Function to get the related product's master category
 def get_related_product_masterCategory(image_url):
     match = re.search(r'(?<=/images\\).+?(?=.jpg)', image_url)
     if match:
@@ -66,7 +68,8 @@ def get_related_product_masterCategory(image_url):
         return related_product.masterCategory
     else:
         return None
-    
+
+# Function to get image recommendations based on product ID
 def get_image_recommendations(product_id):
     start_time = time.time()
     existing_recommendations = RecommendedImage.objects.filter(product_id=product_id)
@@ -118,12 +121,13 @@ def get_image_recommendations(product_id):
 
     return recommended_images
 
-
+# Function to process image and extract features with caching
 @lru_cache(maxsize=256)  # Add caching decorator to cache the results of this function
 def process_image_and_extract_features(image_source):
     preprocessed_img = process_image(image_source)
     return get_feature_vector(preprocessed_img)
 
+# Function to get mean likes-based recommendations with various filtering options
 def get_mean_likes_recommendations(product_image_urls, weights=None, master_category=None, gender=None, articleType=None, subCategory=None):
     start_time = time.time()
     if len(product_image_urls) == 0:
@@ -184,6 +188,7 @@ def get_mean_likes_recommendations(product_image_urls, weights=None, master_cate
 
     return recommended_images
 
+# Function to get recommended products based on user preferences
 def get_recommended_products(product_list, user_preferences):
     if user_preferences is None:
         return product_list
@@ -203,4 +208,3 @@ def get_recommended_products(product_list, user_preferences):
     ]
 
     return recommended_products
-
