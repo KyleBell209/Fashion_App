@@ -1,10 +1,15 @@
+// Wait for the DOM content to load before executing the function
 document.addEventListener('DOMContentLoaded', function () {
+  // Get DOM elements
   const masterCategory = document.getElementById('masterCategory');
   const subCategory = document.getElementById('subCategory');
   const articleType = document.getElementById('articleType');
   const gender = document.getElementById('gender');
 
+  // Add event listener for when the gender value changes
   gender.addEventListener('change', refreshFilteredProducts);
+
+  // Function to filter options by gender
   function filterOptionsByGender(options, genderRestrictions, selectedGender, selectedSubCategory) {
     return options.filter(option => {
       if (!genderRestrictions) {
@@ -18,7 +23,7 @@ document.addEventListener('DOMContentLoaded', function () {
       return true;
     });
   }
-
+  // Men's and women's clothing restrictions
   const menRestrictions = {
     'Apparel': {
       'Dress': true,
@@ -51,7 +56,7 @@ document.addEventListener('DOMContentLoaded', function () {
       'Shoes': ['Formal Shoes']
     }
   };
-
+  // Apparel category options
   const apparelOptions = [
     'Topwear',
     'Bottomwear',
@@ -59,7 +64,7 @@ document.addEventListener('DOMContentLoaded', function () {
     'Loungewear and Nightwear',
     'Apparel Set',
   ];
-
+  // Accessory category options
   const accessoriesOptions = [
     'Watches',
     'Belts',
@@ -74,8 +79,9 @@ document.addEventListener('DOMContentLoaded', function () {
     'Stoles',
     'Scarves',
   ];
-
+  // footwear category options
   const footwearOptions = ['Shoes', 'Flip Flops', 'Sandal'];
+  // articleTypeOptions options
   const articleTypeOptions = {
     'Accessories': ['Accessory Gift Set', 'Key Chain'],
     'Apparel Set': ['Swimwear'],
@@ -91,6 +97,7 @@ document.addEventListener('DOMContentLoaded', function () {
     'Topwear': ['Tops', 'Tshirts', 'Blazers', 'Jackets', 'Shirts', 'Shrug', 'Suspenders', 'Sweaters', 'Sweatshirts', 'Tunics', 'Waistcoat'],
   };
 
+  // Update the subcategory options based on the selected category
   function updateSubCategoryOptions(options) {
     subCategory.innerHTML = '<option value="">Select</option>';
 
@@ -102,7 +109,7 @@ document.addEventListener('DOMContentLoaded', function () {
       subCategory.appendChild(optionElement);
     });
   }
-
+  // Update the article type options based on the selected subcategory
   function updateArticleTypeOptions(options) {
     articleType.innerHTML = '<option value="">Select</option>';
 
@@ -114,7 +121,7 @@ document.addEventListener('DOMContentLoaded', function () {
       articleType.appendChild(optionElement);
     });
   }
-
+  // Event handler for when the master category changes
   function onMasterCategoryChange() {
     const selectedMasterCategory = masterCategory.value;
     let subCategoryOptions;
@@ -137,11 +144,11 @@ document.addEventListener('DOMContentLoaded', function () {
     } else if (selectedGender === 'Women') {
       subCategoryOptions = filterOptionsByGender(subCategoryOptions, womenRestrictions[selectedMasterCategory], selectedGender);
     }
-
+    
     updateSubCategoryOptions(subCategoryOptions);
     articleType.innerHTML = '<option value="">Select</option>';
   }
-
+  // Event handler for when the subcategory changes
   function onSubCategoryChange() {
     const selectedSubCategory = subCategory.value;
     let articleTypeOptionsForSubCategory;
@@ -164,10 +171,10 @@ document.addEventListener('DOMContentLoaded', function () {
     articleTypeOptionsForSubCategory = filterOptionsByGender(articleTypeOptionsForSubCategory, restrictions, gender.value, selectedSubCategory);
     updateArticleTypeOptions(articleTypeOptionsForSubCategory);
   }
-
+  // event listeners for changes in master and sub categories
   masterCategory.addEventListener('change', onMasterCategoryChange);
   subCategory.addEventListener('change', onSubCategoryChange);
-
+  // Initialize user preferences
   if (user_preferences.masterCategory) {
     masterCategory.value = user_preferences.masterCategory;
     onMasterCategoryChange();
@@ -187,6 +194,7 @@ document.addEventListener('DOMContentLoaded', function () {
 const form = document.getElementById('preferences-form');
 const formFields = Array.from(form.elements).filter(el => el.tagName === 'SELECT');
 
+// Refresh the filtered products based on form data
 function refreshFilteredProducts() {
   const hasSelectedValue = formFields.some(field => field.value !== "");
 
@@ -235,7 +243,7 @@ function refreshFilteredProducts() {
       });
   }
 }
-
+// Update user preferences based on the current form data
 function updateUserPreferences() {
   // Set user.preferences to empty string if all select fields are "Select"
   if (formFields.every(field => field.value === "")) {
@@ -248,7 +256,7 @@ function updateUserPreferences() {
     }, {});
   }
 }
-
+//  event listeners for updating user preferences
 gender.addEventListener('change', function () {
   updateUserPreferences();
   onMasterCategoryChange();
@@ -282,13 +290,14 @@ if (formFields.every(field => field.value === "")) {
   user.preferences = "";
 }
 
-
+// Prevent form submission, as we are handling it with AJAX
 function handleFormSubmit(event) {
   event.preventDefault();
 }
-
+//  form submit event listener
 form.addEventListener('submit', handleFormSubmit);
 
+//  event listeners for refreshing filtered products
 formFields.forEach(field => {
   field.addEventListener('change', refreshFilteredProducts);
 });
@@ -301,7 +310,7 @@ document.getElementById('more-products').addEventListener('click', refreshFilter
 
 refreshFilteredProducts();
 
-
+// Attach event listeners for adding items to likes or superlike
 function attachAddTolikesEventListeners() {
   document.querySelectorAll('.add-btn, .superlike-btn').forEach(button => {
     button.addEventListener('click', function (event) {
@@ -319,7 +328,7 @@ function attachAddTolikesEventListeners() {
     });
   });
 }
-
+// Update the like status for a product
 function updateLike(productId, action, source, event) {
   event.preventDefault();
 
@@ -364,11 +373,11 @@ function updateLike(productId, action, source, event) {
       }
   });
 }
-
+// Attach event listeners for add to likes and superlike buttons
 document.addEventListener('DOMContentLoaded', function () {
   attachAddTolikesEventListeners();
 });
-
+// Clear user preferences and reload the page
 function clearPreferences() {
   // Send an AJAX request to the server to clear the user's preferences
   fetch('/clear_preferences/', {
@@ -389,5 +398,5 @@ function clearPreferences() {
     console.error('Error clearing preferences:', error);
   });
 }
-
+// Add event listener for clearing preferences button
 document.getElementById('clear-preferences-btn').addEventListener('click', clearPreferences);
