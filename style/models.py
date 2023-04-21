@@ -62,7 +62,7 @@ class Likes(models.Model):
 	@property
 	def get_likes_items(self):
 		likeitems = self.likeitem_set.all()
-		total = sum([item.quantity for item in likeitems])
+		total = sum([item.likestatus for item in likeitems])
 		return total 
 
     # Get the list of product IDs from the likes
@@ -76,7 +76,7 @@ class Likes(models.Model):
 class LikeItem(models.Model):
     product = models.ForeignKey(FashionProduct, on_delete=models.SET_NULL, null=True)
     likes = models.ForeignKey(Likes, on_delete=models.SET_NULL, null=True)
-    quantity = models.IntegerField(default=0, null=True, blank=True)
+    likestatus = models.IntegerField(default=0, null=True, blank=True)
     date_added = models.DateTimeField(auto_now_add=True)
     masterCategory = models.CharField(max_length=200, null=True)
     name = models.CharField(max_length=200, null=True)

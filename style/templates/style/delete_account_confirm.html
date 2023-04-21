@@ -1,11 +1,19 @@
 {% extends "style/main.html" %}
 
 {% block content %}
-    <h2>Confirm account deletion</h2>
-    <p>Are you sure you want to delete your account? This action cannot be undone.</p>
-    <form method="POST" action="{% url 'delete_account' %}">
-        {% csrf_token %}
-        <button type="submit" class="btn btn-danger">Delete account</button>
-        <a href="{% url 'style' %}" class="btn btn-secondary">Cancel</a>
-    </form>
+<!-- Title of the account deletion confirmation page -->
+<h2>Confirm account deletion</h2>
+<!-- A warning message for users to consider before proceeding with account deletion -->
+<p>Are you sure you want to delete your account? This action cannot be undone.</p>
+
+<!-- Form for submitting the account deletion request -->
+<form method="POST" action="{% url 'delete_account' %}">
+    {% csrf_token %} <!-- CSRF token for security purposes -->
+    
+    <!-- Button to confirm account deletion -->
+    <button type="submit" class="btn btn-danger">Delete account</button>
+    
+    <!-- Button to cancel account deletion and navigate back to the main page -->
+    <a href="{% url 'style' %}" class="btn btn-secondary">Cancel</a>
+</form>
 {% endblock %}

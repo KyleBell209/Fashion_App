@@ -73,7 +73,7 @@ class Migration(migrations.Migration):
             name='LikeItem',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('quantity', models.IntegerField(blank=True, default=0, null=True)),
+                ('likestatus', models.IntegerField(blank=True, default=0, null=True)),
                 ('date_added', models.DateTimeField(auto_now_add=True)),
                 ('masterCategory', models.CharField(max_length=200, null=True)),
                 ('name', models.CharField(max_length=200, null=True)),

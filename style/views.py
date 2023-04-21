@@ -321,10 +321,10 @@ def updateLike(request):
 
     # Update the LikeItem object based on the action
     if action == 'add':
-        orderItem.quantity += 1
+        orderItem.likestatus += 1
         orderItem.save()
     elif action == 'superlike':
-        orderItem.quantity += 1
+        orderItem.likestatus += 1
         orderItem.superliked = not orderItem.superliked  
         orderItem.save()
     elif action == 'remove':
