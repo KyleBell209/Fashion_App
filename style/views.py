@@ -317,24 +317,24 @@ def updateLike(request):
 
     # Get the Likes and LikeItem objects associated with the user's account and the product
     likes, created = Likes.objects.get_or_create(account=account)
-    orderItem, created = LikeItem.objects.get_or_create(likes=likes, product=product)
+    likeitem, created = LikeItem.objects.get_or_create(likes=likes, product=product)
 
     # Update the LikeItem object based on the action
     if action == 'add':
-        orderItem.likestatus += 1
-        orderItem.save()
+        likeitem.likestatus += 1
+        likeitem.save()
     elif action == 'superlike':
-        orderItem.likestatus += 1
-        orderItem.superliked = not orderItem.superliked  
-        orderItem.save()
+        likeitem.likestatus += 1
+        likeitem.superliked = not likeitem.superliked  
+        likeitem.save()
     elif action == 'remove':
-        orderItem.delete()
+        likeitem.delete()
 
     # Create a JSON response with a message, product ID, and superliked status
     response_data = {
-        'message': f'Superliked {product_id}' if action == 'superlike' and orderItem.superliked else 'Item was added',
+        'message': f'Superliked {product_id}' if action == 'superlike' and likeitem.superliked else 'item was added to likes',
         'productId': product_id,
-        'superliked': orderItem.superliked  
+        'superliked': likeitem.superliked  
     }
 
     # Return the JSON response
