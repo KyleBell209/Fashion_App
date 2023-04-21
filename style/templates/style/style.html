@@ -1,29 +1,37 @@
-{% extends 'style/main.html' %}
-{% load superlike_tag  %}
-{% load static %}
-{% block content %}
+{% extends 'style/main.html' %}{# Extends the base template 'style/main.html' #}
+{% load superlike_tag  %}{# Loads custom 'superlike' template tag #}
+{% load static %}{# Loads Django's built-in static files management tags #}
+{% block content %}{# Content block to be inserted into the base template #}
 <div class="row">
 	<div class="col-lg-12">
-		<form method="GET" action="{% url 'style' %}">
+		<form method="GET" action="{% url 'style' %}"> {# Form for searching/filtering products #}
+              {# Hidden inputs to store the selected master_category and sub_category #}
             <input type="hidden" name="master_category" value="{{ request.GET.master_category }}">
             <input type="hidden" name="sub_category" value="{{ request.GET.sub_category }}">
-			<input type="text" name="q" placeholder="Search by product name" value="{{ request.GET.q }}">
+			{# Search input for filtering products by name #}
+            <input type="text" name="q" placeholder="Search by product name" value="{{ request.GET.q }}">
 			<button type="submit" class="btn btn-primary">Search</button>
-			<div class="dropdown">
+			{# Master category dropdown #}
+            <div class="dropdown">
+                {# Dropdown button for master category selection #}
 				<button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 					Master Category
 				</button>
 				<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    {# Dropdown menu items for master category selection (skipped as requested) #}
                     <a class="dropdown-item" href="?master_category=&sub_category={{ request.GET.sub_category }}">All</a>
                     <a class="dropdown-item" href="?master_category=Apparel&sub_category={{ request.GET.sub_category }}">Apparel</a>
                     <a class="dropdown-item" href="?master_category=Accessories&sub_category={{ request.GET.sub_category }}">Accessories</a>
                     <a class="dropdown-item" href="?master_category=Footwear&sub_category={{ request.GET.sub_category }}">Footwear</a>
                 </div>
 			</div>
+            {# Sub category dropdown #}
 			<div class="dropdown">
+                {# Dropdown button for sub category selection #}
 				<button class="btn btn-secondary dropdown-toggle" type="button" id="subCategoryDropdownButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 					Sub Category
 				</button>
+                {# Dropdown menu items for sub category selection #}
 				<div class="dropdown-menu" aria-labelledby="subCategoryDropdownButton" id="subCategoryDropdown">
                     <a class="dropdown-item" href="?sub_category=">All</a>
 					<a class="dropdown-item" href="?sub_category=Topwear">Topwear</a>
@@ -51,12 +59,14 @@
 		<hr>
 	</div>
 	<hr>
+    {# Pagination of products #}
 	{% for product in page_obj %}
     {% if not request.GET.q or request.GET.q|lower in product.productDisplayName|lower %}
         {% if not request.GET.master_category or request.GET.master_category == product.masterCategory %}
             <div class="col-lg-4">
                 <img class="ProductImage" src="{{ MEDIA_URL }}{{ product.imageURL }}">
                 <div class="box-element product">
+                    {# Product details #}
                     <h6><strong>{{product.productDisplayName}}</strong></h6>
                     <h7><strong>{{product.masterCategory}}</strong></h7>
                     <h8><strong>{{product.subCategory}}</strong></h8>
@@ -64,6 +74,7 @@
                     <button data-product="{{product.id}}" data-action="add" class="btn btn-outline-secondary add-btn update-likes{% if product.id in likesProductIds %} btn-green{% endif %}">Like</button>
                     <button data-product="{{product.id}}" data-action="superlike" class="btn btn-outline-primary superlike-btn update-likes{% if items_superliked_status|default:False and items_superliked_status|get_item:product.id|default:False %} superlike-active{% endif %}">Superlike</button>
                     
+                    {# Edit and delete buttons for superuser #}
                     {% if request.user.is_superuser %}
                     <form method="post" action="{% url 'delete_product' product.id %}">
                         {% csrf_token %}
@@ -81,15 +92,16 @@
 <!-- Pagination links -->
 <div class="pagination">
     <span class="step-links">
+        {# Pagination links #}
         {% if page_obj.has_previous %}
             <a href="?page=1&master_category={{ request.GET.master_category }}&sub_category={{ request.GET.sub_category }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">&laquo; first</a>
             <a href="?page={{ page_obj.previous_page_number }}&master_category={{ request.GET.master_category }}&sub_category={{ request.GET.sub_category }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">previous</a>
         {% endif %}
-
+        {# Current page number #}
         <span class="current-page">
             Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
         </span>
-
+        {# Next and last page links #}
         {% if page_obj.has_next %}
             <a href="?page={{ page_obj.next_page_number }}&master_category={{ request.GET.master_category }}&sub_category={{ request.GET.sub_category }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">next</a>
             <a href="?page={{ page_obj.paginator.num_pages }}&master_category={{ request.GET.master_category }}&sub_category={{ request.GET.sub_category }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">last &raquo;</a>
@@ -99,6 +111,7 @@
 
 {% endblock content %}
 
+{# extra_js links#}
 {% block extra_js %}
   <script src="{% static 'js/style.js' %}"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
