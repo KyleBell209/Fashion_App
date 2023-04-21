@@ -36,4 +36,4 @@ python manage.py runserver
 ```
 
 ## Disclaimer
-Beware that the initial time to generate recommendations may take a while, this is due to TensorFlow needing to be initialized.
+Beware that the initial time to generate recommendations may take a while, this is due to TensorFlow needing to be initialized. This was also worked on with an old deprecated version of Python, using 3.7.2, this may cause dependancy issues.
