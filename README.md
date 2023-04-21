@@ -1,6 +1,8 @@
 # Content-Based Fashion Recommender Django Application
 This repository contains an image-based recommendation system that recommends similar images based on the input image. It uses a pre-trained ResNet101 model, feature extraction, Nearest Neighbors, and various filtering options to provide accurate recommendations. It also includes caching for efficient image processing.
 
+Created using Visual Studio Code and Python 3.7.2
+
 ## Features
 * Pre-trained ResNet101 model for feature extraction.
 
